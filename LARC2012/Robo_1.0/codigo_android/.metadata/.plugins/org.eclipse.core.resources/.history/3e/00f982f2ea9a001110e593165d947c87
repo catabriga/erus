@@ -1,0 +1,87 @@
+package android.tcptest;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+
+public class AndroidTCPTestActivity extends Activity implements Runnable
+{
+	ServerSocket serverSocketPC;
+	ServerSocket serverSocketArduino;
+	Connection connectionArduino;
+	Connection connectionPC;
+	
+	final int portPC = 18550;
+	final int portArduino = 4567 ;
+	TextView ipTv;
+		
+    public void onCreate(Bundle savedInstanceState) 
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        
+        ipTv = (TextView)findViewById(R.id.ip);
+        
+        
+        
+        (new Thread(this)).start();
+    }
+    
+    private Connection acceptConnection(ServerSocket ss)
+    {
+    	Connection connection;
+    	
+    	try 
+		{
+			Socket socket = ss.accept();				
+			connection = new Connection(socket);
+		}
+		catch (IOException e)
+		{
+		
+			e.printStackTrace();
+			connection = null;				
+		}
+    	
+    	return connection;
+    }
+    
+	public void run()
+	{ 			
+		try 
+		{	
+			serverSocketPC = new ServerSocket(portPC);			
+			serverSocketArduino = new ServerSocket(portArduino);
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();			
+		}	  
+        
+        connectionArduino = acceptConnection(serverSocketArduino);
+        connectionPC = acceptConnection(serverSocketPC);
+        
+        
+		while(connectionPC != null && connectionArduino != null)
+		{
+			try
+			{
+				String msg = connectionArduino.readMessage();
+				connectionPC.sendMessage(msg);
+				
+				msg = connectionPC.readMessage();
+				connectionArduino.sendMessage(msg);
+			}
+			catch (Exception e)
+			{
+				//connectionPC = null;
+				//connectionArduino = null;
+			}
+		}		
+	
+	}
+}

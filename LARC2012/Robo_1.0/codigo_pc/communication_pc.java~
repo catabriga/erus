@@ -1,0 +1,41 @@
+
+import java.io.IOException;
+
+public class communication_pc {
+	public static void main(String[] args)
+	{
+		String ip = "192.168.43.1";//192.168.43.5
+		int port = 18550;
+		
+		supervisionPC(ip, port);
+	}
+	public static void supervisionPC(String ip, int port)
+	{
+		Connection c = null;
+		try 
+		{
+			c = new Connection(ip, port);
+		} 		
+		catch (IOException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println(c.getIpAddress());
+		
+		while(true)
+		{
+			byte msg1[] = {0x10,100,0};
+			byte msg2[] = {0x11,100,0};
+			
+			try {
+				c.sendMessage(msg1, 0, 3);
+				c.sendMessage(msg2, 0, 3);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+}

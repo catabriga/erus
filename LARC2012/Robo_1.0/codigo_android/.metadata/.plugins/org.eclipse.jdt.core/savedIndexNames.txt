@@ -1,0 +1,5 @@
+INDEX VERSION 1.126+/home/lucas/Dropbox/ERUS/Robo_1.0/codigo_android/.metadata/.plugins/org.eclipse.jdt.core
+1465240314.index
+873254899.index
+3916997175.index
+367407112.index

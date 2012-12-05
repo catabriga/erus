@@ -1,0 +1,51 @@
+package erus.android.sensores;
+
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.widget.TextView;
+
+/* Accelerometer*/
+public class Accelerometer {
+	
+	
+	private float accX;
+	private float accY;
+	private float accZ;
+	
+	private Sensor accelerometer;
+	
+	Accelerometer(SensorManager sm){
+		
+		accelerometer = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		
+	}
+	void regListener(SensorManager sm){
+		
+		sm.registerListener( new SensorEventListener() {
+
+			public void onSensorChanged(SensorEvent event) {
+
+				accX = event.values[0];
+				accY = event.values[1];
+				accZ = event.values[2];
+			}
+
+			public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+			}
+		}, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+		
+	}
+	float getX(){
+		return this.accX;
+	}	
+	float getY(){
+		return this.accY;
+	}
+	float getZ(){
+		return this.accZ;
+	}
+
+}

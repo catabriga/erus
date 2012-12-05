@@ -1,0 +1,403 @@
+package erus.android;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.ByteBuffer;
+
+import org.opencv.core.Scalar;
+
+import android.app.Activity;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+
+public class CodigoAndroidActivity extends Activity implements Runnable
+{
+	private static final String TAG = "CodigoAndroidActivity";
+	
+	private ServerSocket serverSocketPC;
+	private ServerSocket serverSocketArduino;
+	private Connection connectionArduino;
+	private Connection connectionPC;
+	private MessageAssembler arduinoMessages;
+    private MessageAssembler pcMessages;
+    
+	
+	private final int portPC = 18550;
+	private final int portArduino = 4567;
+		
+	private ErusView erusView;
+	private CameraProcessor cameraProcessor;
+	
+	private SensorManager mSM; 
+	private Accelerometer mAccelerometer;
+	private Compass mCompass;
+	private Encoder mEncoder;
+	
+	private boolean connectToPC;
+	private boolean connectToArduino;
+	
+	//private long lastCameraMsg;
+	//private int lastFrameCount;
+	
+	private boolean running;
+	
+	public static byte[] toByta(int data) {
+	    return new byte[] {
+	        (byte)((data >> 24) & 0xff),
+	        (byte)((data >> 16) & 0xff),
+	        (byte)((data >> 8) & 0xff),
+	        (byte)((data >> 0) & 0xff),
+	    };
+	}
+	
+	public static byte[] toByta(float data) {
+	    return toByta(Float.floatToRawIntBits(data));
+	}
+	
+    public void onCreate(Bundle savedInstanceState) 
+    {
+        super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		cameraProcessor = new CameraProcessor(this);		
+		
+		mSM = (SensorManager)getSystemService(SENSOR_SERVICE);
+		mAccelerometer = new Accelerometer(mSM);
+		mCompass = new Compass(mSM);
+		mEncoder = new Encoder();
+    }
+    
+    public void finishCreation()
+    {
+    	erusView = new ErusView(this);
+    	
+		LinearLayout layout = new LinearLayout(this);
+		layout.setOrientation(LinearLayout.HORIZONTAL);
+		layout.addView(erusView);
+		layout.addView(cameraProcessor);
+		
+		erusView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
+		cameraProcessor.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
+		
+		setContentView(layout);
+				
+		connectToPC = true;
+		connectToArduino = true;
+
+		//lastCameraMsg = System.currentTimeMillis();
+		//lastFrameCount = -1;
+		
+		(new Thread(this)).start();
+    }
+    
+    protected void onResume()
+    {
+	   super.onResume();
+	
+	   mAccelerometer.regListener(mSM);
+	   mCompass.regListener(mSM);
+	   
+    }
+    
+    public void onStop()
+    {
+    	super.onStop();
+    	
+    	running = false;
+    }
+    
+    private Connection acceptConnection(ServerSocket ss)
+    {
+    	Connection connection;
+    	
+    	try 
+		{
+			Socket socket = ss.accept();				
+			connection = new Connection(socket);
+		}
+		catch (IOException e)
+		{
+		
+			e.printStackTrace();
+			connection = null;				
+		}
+    	
+    	return connection;
+    }
+    
+    private void sendSensorDataToPC(MessageAssembler pcMessages)
+    {    	
+    	if(this.connectToPC)
+    	{
+	    	try
+	    	{	    		
+	    		Log.i(TAG, "Sending Data to PC");		    		
+	    		pcMessages.sendImageMessage(cameraProcessor.getFrameData(), cameraProcessor.getFrameWidth(), cameraProcessor.getFrameHeight());
+	    		pcMessages.sendAccelerometerMessage(toByta(mAccelerometer.getX()), toByta(mAccelerometer.getY()), toByta(mAccelerometer.getZ()));
+	    		pcMessages.sendCompassMessage(toByta(mCompass.getX()), toByta(mCompass.getY()), toByta(mCompass.getZ()));
+	    		pcMessages.sendEncoderMessage(toByta(mEncoder.getEncRight()), toByta(mEncoder.getEncLeft()));
+	    		Log.i(TAG, mEncoder.getEncRight() + " " + mEncoder.getEncLeft());
+	    	} 
+	    	catch (IOException e)
+			{
+	    		e.printStackTrace();
+			}
+    	}
+    	else
+    	{
+    		Log.i(TAG, "Can't send data to PC, connectToPC = false");
+    	}
+    }
+    
+    private void stopConnections()
+    {
+    	try 
+    	{    		
+			if(connectToArduino)
+			{
+				connectionArduino.close();
+			}
+			
+			if(connectToPC)
+    		{
+    			connectionPC.close();
+    		}
+			
+			serverSocketArduino.close();
+			serverSocketPC.close();
+		} 
+    	catch (IOException e) 
+    	{
+			e.printStackTrace();
+		}
+    	
+    }
+    
+    private void createColorFile()
+    {
+    	ColorCalibrator cc = new ColorCalibrator();
+		Scalar[] colors = new Scalar[4];
+		Scalar[] colorsRadius = new Scalar[4];
+		double[] areas = new double[4];
+		
+		colors[0] = new Scalar(225, 0, 0, 0);
+		colors[1] = new Scalar(225, 0, 0, 0);
+		colors[2] = new Scalar(225, 0, 0, 0);
+		colors[3] = new Scalar(225, 0, 0, 0);
+		
+		colorsRadius[0] = new Scalar(25, 50, 50, 0);
+		colorsRadius[1] = new Scalar(25, 50, 50, 0);
+		colorsRadius[2] = new Scalar(25, 50, 50, 0);
+		colorsRadius[3] = new Scalar(25, 50, 50, 0);
+		
+		areas[0] = 0.1;
+		areas[1] = 0.1;
+		areas[2] = 0.1;
+		areas[3] = 0.1;
+		
+		cc.writeCalibrationFile(colors, colorsRadius, areas);
+		
+    }
+    
+    private void createSockets()
+    {
+    	try 
+		{	
+			serverSocketPC = new ServerSocket(portPC);			
+			serverSocketArduino = new ServerSocket(portArduino);
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();			
+		}	
+
+    }
+    
+    private void createMessageAssemblers()
+    {        
+		if(connectToArduino)
+		{
+			connectionArduino = acceptConnection(serverSocketArduino);
+			erusView.setArduinoConnected(true);
+			arduinoMessages = new MessageAssembler(connectionArduino);
+		}
+		
+		if(connectToPC)
+		{
+			connectionPC = acceptConnection(serverSocketPC);
+			erusView.setPCConnected(true);
+			pcMessages = new MessageAssembler(connectionPC);
+		}
+    }
+    
+    private void listenConnections()
+    {
+    	if(connectToArduino)
+		{
+			arduinoMessages.listenConnection();
+		}
+			
+		if(connectToPC)
+		{
+			pcMessages.listenConnection();
+		}
+    }
+    
+    private void handlePCMessages()
+    {		
+		while(connectToPC && pcMessages.messagesAvailable())
+		{
+			byte[] msg = pcMessages.getNextMessage();
+			handlePCMessage(msg);
+							
+			try 
+			{
+				if(connectToArduino)
+				{
+					connectionArduino.sendMessage(msg, 0, msg.length);
+				}	
+			}
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}	
+    }
+    
+    private void handlePCMessage(byte[] msg)
+    {
+    	switch(msg[0])
+		{
+			case Protocol.REQUEST_IMAGE:
+			{
+				sendSensorDataToPC(pcMessages);
+			}break;
+			case Protocol.IMG_CALIB_DISK:
+			{
+				setImgCalibrationDisk(msg);
+			}break;
+			case Protocol.IMG_CALIB_MEM:
+			{
+				setImgCalibrationMem(msg);
+			}break;
+		}    	
+    }
+    
+    private void handleArduinoMessages()
+    {		
+    	while(connectToArduino && arduinoMessages.messagesAvailable())
+		{
+			byte[] msg = arduinoMessages.getNextMessage();
+			if(msg[0] == 0x40)//TODO verificar se eh assim mesmo
+			{
+				mEncoder.refresh(msg);
+				erusView.setEncoder(mEncoder.getEncRight(), mEncoder.getEncLeft());
+			}
+		}			
+    }
+    
+    private void initRobot()
+    {
+    	if(connectToPC)
+		{
+			sendColor2PC(connectionPC);			
+		}
+    }
+    
+	public void run()
+	{ 	
+		createColorFile();
+		
+		running = true;
+		
+		createSockets();
+		createMessageAssemblers();
+		
+		initRobot();
+				
+		while(running)
+		{		
+ 			initRobot();
+			listenConnections();
+									
+			handlePCMessages();
+			handleArduinoMessages();
+		}	
+		
+		stopConnections();
+	
+	}
+	
+	void setImgCalibrationDisk(byte[] msg)
+	{
+		Scalar[] colors1 = new Scalar[4];
+		Scalar[] colorsRadius1 = new Scalar[4];
+		double[] minContourAreas1 = new double[4];
+		ByteBuffer bb = ByteBuffer.allocate(4);
+		for(int i = 0; i < 4; i++)
+		{
+			colors1[i] = new Scalar(msg[1+i*12],msg[2+i*12],msg[3+i*12],msg[4+i*12]);
+			colorsRadius1[i] = new Scalar(msg[5+i*12],msg[6+i*12],msg[7+i*12],msg[8+i*12]);
+			bb.put(msg, 9+i*12, 4);
+			minContourAreas1[i] = (double)bb.getFloat();
+		}
+		ColorCalibrator c1 = new ColorCalibrator();
+		c1.writeCalibrationFile(colors1, colorsRadius1, minContourAreas1);
+	}
+	
+	void setImgCalibrationMem(byte[] msg)
+	{
+		Scalar[] colors1 = new Scalar[4];
+		Scalar[] colorsRadius1 = new Scalar[4];
+		double[] minContourAreas1 = new double[4];
+		ByteBuffer bb = ByteBuffer.allocate(4);
+		for(int i = 0; i < 4; i++)
+		{
+			colors1[i] = new Scalar(msg[1+i*12],msg[2+i*12],msg[3+i*12],msg[4+i*12]);
+			colorsRadius1[i] = new Scalar(msg[5+i*12],msg[6+i*12],msg[7+i*12],msg[8+i*12]);
+			bb.put(msg, 9+i*12, 4);
+			minContourAreas1[i] = (double)bb.getFloat();
+		}
+		cameraProcessor.setRGBColor(colors1, colorsRadius1, minContourAreas1);
+	}
+	
+	public void sendColor2PC(Connection connectionPC)
+	{
+		byte color[] = new byte[49];
+		ByteBuffer bb = ByteBuffer.allocate(4);
+		Scalar[] colors=cameraProcessor.getColors();
+		Scalar[] colorsRadius=cameraProcessor.getColorsRadius();
+		double[] minContourAreas=cameraProcessor.getMinContourAreas();
+		
+		color[0] = Protocol.IMG_CALIB_CONF_AND;
+		
+		for(int i=0;i < ColorCalibrator.NUM_COLORS;i++)
+		{
+			for(int j=0; j < 4;j++)
+			{
+				color[j+1+i*12]=(byte)colors[i].val[j];
+				color[j+5+i*12]=(byte)colorsRadius[i].val[j];
+			}
+			bb.rewind();
+			bb.putFloat((float) minContourAreas[i]);
+			for(int k = 0; k < 4; k++)
+			{
+				bb.rewind();
+				color[i*12+k+9]=bb.get(k);
+			}
+		}
+		try {
+			connectionPC.sendMessage(color, 0, 49);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
