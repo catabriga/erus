@@ -2,21 +2,21 @@
 #define PWM_RIGHT 3
 #define DIR_LEFT 13
 #define DIR_RIGHT 12
-#define SETPOS 2000
+#define SETPOS 20
 #define KP 1
-#define KD 0
+#define KD 0.5
 #define KI 0
 
 int motorPWMPins[2] = {PWM_LEFT, PWM_RIGHT};
 int motorDirPins[2] = {DIR_LEFT, DIR_RIGHT};
-int motorMAXPWM[2] = {153, 153}; // DO NOT CHANGE!!! YOU MAY DESTROY THE MOTORS!!!
+int motorMAXPWM[2] = {20, 20}; // DO NOT CHANGE!!! YOU MAY DESTROY THE MOTORS!!!
 int sensor[5] = {0,0,0,0,0};
 int sensorsSum, sensorsAverage, integral, lastProportional;
 int rightSpeed, leftSpeed;
 
 void setupMotors(void)
 {
-  int i;
+        int i;
 	for(i=0; i<2; i++)
 	{
 		pinMode(motorPWMPins[i], OUTPUT);
@@ -31,12 +31,11 @@ void setup(void)
 {  
 	setupMotors();
 
-	// Initialise serial port
+	// Initialize serial port
 	Serial.begin(9600);
 
 	// Waits 1 second at startup
 	// delay(1000);
-
 	Serial.print("Erusbot started\n\r");
 }
 
@@ -69,7 +68,7 @@ void readSensors()
         for(int i=0; i<5; i++)
         {
                 sensor[i] = 1 - digitalRead(9-i);
-                sensorsAverage += sensor[i]*i*100;
+                sensorsAverage += sensor[i]*i*10;
                 sensorsSum += sensor[i];
         }
         Serial.print("sensor Average: ");
@@ -81,11 +80,18 @@ void readSensors()
 int pidCalc()
 {
 	int pos =  int(sensorsAverage/sensorsSum);
+        Serial.print("POS: ");
+        Serial.println(pos);
+        
 	int proportional = pos - SETPOS;
+
 	integral = integral + proportional;
+
 	int derivative = proportional - lastProportional;
+
 	lastProportional = proportional;
 	int error = KP*proportional + KD*derivative + KI*integral;
+
 	return error;
 }
 
@@ -98,11 +104,17 @@ void calcTurn(int error)
 		rightSpeed =  motorMAXPWM[1] + error;
 		leftSpeed = motorMAXPWM[1];
 	}
-	if(error > 0)
+	else if(error > 0)
 	{
   		rightSpeed =  motorMAXPWM[1];
 		leftSpeed = motorMAXPWM[1] - error;
 	}
+        else
+        {
+  		rightSpeed = motorMAXPWM[1];
+		leftSpeed = motorMAXPWM[1];
+	}
+          
 }
 
 void printSensors()
@@ -110,21 +122,27 @@ void printSensors()
         for(int i=0; i<5; i++)
         {
                 Serial.print(sensor[i]);
-                Serial.print(" / ");
+                if(i!=4)Serial.print(" / ");
         }
         Serial.println("");
 }
 
 void loop()
 {	
-        int error;
+        int error = pidCalc();;
         readSensors();
         printSensors();
-        error = pidCalc();
         calcTurn(error);
-        Serial.print("erro: ");
+        
+        Serial.print("Erro: ");
         Serial.println(error);
+        Serial.print("V Direita:");
+        Serial.println(rightSpeed);
+        Serial.print("V Esquerda:");
+        Serial.println(leftSpeed);
+        
         setMotor(0, leftSpeed, 1);
         setMotor(1, rightSpeed, 1);
-        delay(1000);
+        Serial.println("-----------------------");
+        //delay(1000);
 }
