@@ -20,13 +20,18 @@ void setupMotors(void)
 }
 
 
-void setMotor(int motor, uint8_t velocity, uint8_t direction)
+void setMotor(int motor, int velocity, uint8_t direction)
 {
 	
 	// This protects the motor to the rated volgate. DO NOT CHANGE!!!
 	if(velocity > motorMAXPWM[motor])
 	{
 		velocity = motorMAXPWM[motor];
+	}
+	
+	if(velocity < 0)
+	{
+		velocity = 0;
 	}
 
 	if(direction)
