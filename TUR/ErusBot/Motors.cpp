@@ -4,7 +4,7 @@
 
 int motorPWMPins[2] = {PWM_LEFT, PWM_RIGHT};
 int motorDirPins[2] = {DIR_LEFT, DIR_RIGHT};
-int motorMAXPWM[2] = {255, 255}; // DO NOT CHANGE!!! YOU MAY DESTROY THE MOTORS!!!
+int motorMAXPWM[2] = {220, 220}; // DO NOT CHANGE!!! YOU MAY DESTROY THE MOTORS!!!
 
 void setupMotors(void)
 {

@@ -4,9 +4,11 @@
 #include "Sensors.h"
 #include "PIDControl.h"
 #include "Error.h"
+#include "LDR.h"
 
-static int defaultVelocity = 100;
-static int turnVelocity = 50;
+static int defaultVelocity = 180;
+static int turnVelocity1 = 90;
+static int turnVelocity2 = 140;
 static unsigned long lastTime;
 
 void setup(void)
@@ -14,7 +16,7 @@ void setup(void)
 	Serial.begin(9600);
 	setupSensors();
 	setupMotors();
-	setupPIDControl(3, 0, 0);
+	setupPIDControl(25, 0, 1);
 	pinMode(BUTTON, INPUT);
 }
 
@@ -42,7 +44,17 @@ void loop(void)
 	
 	int* sensors = readSensors();
 	int error = getError(sensors);
-	//int pid = getPIDControl(error);
+	int ldr = getLDR();
+//	int pid = getPIDControl(error);
+	
+/*	setMotor(0, defaultVelocity + pid, 1); // Motor 0 -> esquerda
+	setMotor(1, defaultVelocity - pid, 1);
+	
+	Serial.print("Motor 0 = ");
+	Serial.println(defaultVelocity + pid);
+	Serial.print("Motor 1 = ");
+	Serial.println(defaultVelocity - pid);*/
+	
 	/*Serial.print(sensors[0]);
 	Serial.print(" / ");
 	Serial.print(sensors[1]);
@@ -54,19 +66,44 @@ void loop(void)
 	Serial.print(sensors[4]);
 	Serial.println(" / ");
 	Serial.println(error);*/
-	if(error == 0)
+
+	
+	
+	if(sensors[2] == 1)
 	{
 		setMotor(0, defaultVelocity, 1); // 1 - > Frente
 		setMotor(1, defaultVelocity, 1);
 	}
 	else if(error < 0)
 	{
-		setMotor(0, turnVelocity, 1);
-		setMotor(1, turnVelocity, 0);
+		if(sensors[0] == 0)
+		{
+			setMotor(0, turnVelocity1, 1);
+			setMotor(1, turnVelocity1, 0);
+		}
+		else
+		{
+			setMotor(0, turnVelocity2, 1);
+			setMotor(1, turnVelocity2, 0);
+		}
+	}
+	else if (error > 0)
+	{
+		if(sensors[4] == 0)
+		{
+			setMotor(0, turnVelocity1, 0);
+			setMotor(1, turnVelocity1, 1);
+		}
+		else
+		{
+			setMotor(0, turnVelocity2, 0);
+			setMotor(1, turnVelocity2, 1);
+		}
 	}
 	else
 	{
-		setMotor(0, turnVelocity, 0);
-		setMotor(1, turnVelocity, 1);
+	
+		setMotor(0, defaultVelocity, 1); // 1 - > Frente
+		setMotor(1, defaultVelocity, 1);
 	}
 }
