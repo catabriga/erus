@@ -5,8 +5,8 @@
 #include "PIDControl.h"
 #include "Error.h"
 
-static int defaultVelocity = 50;
-static int turnVelocity = 35;
+static int defaultVelocity = 100;
+static int turnVelocity = 50;
 static unsigned long lastTime;
 
 void setup(void)
@@ -52,23 +52,12 @@ void loop(void)
 	Serial.print(sensors[3]);
 	Serial.print(" / ");
 	Serial.print(sensors[4]);
-	Serial.println(" / ");*/
+	Serial.println(" / ");
+	Serial.println(error);*/
 	if(error == 0)
 	{
-		if(sensors[2] || ((millis() - lastTime) < 750))
-		{
-			setMotor(0, defaultVelocity, 1); // 1 - > Frente
-			setMotor(1, defaultVelocity, 1);
-			if(sensors[2])
-			{
-				lastTime = millis();
-			}
-		}
-		else
-		{
-			setMotor(0, defaultVelocity, 0); // 0 - > Tras
-			setMotor(1, defaultVelocity, 0);
-		}
+		setMotor(0, defaultVelocity, 1); // 1 - > Frente
+		setMotor(1, defaultVelocity, 1);
 	}
 	else if(error < 0)
 	{
