@@ -3,5 +3,6 @@
 
 void setupLDR(void);
 int getLDR(void);
+long getDefaultLight(void);
 
 #endif

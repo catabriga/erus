@@ -1,4 +1,4 @@
-#include <Arduino.h>
+/*#include <Arduino.h>
 #include <math.h>
 #include "Pins.h"
 #include "Accelerometer.h"
@@ -43,4 +43,4 @@ double getAccZ()
  	z = RAD_TO_DEG * (atan2(-yAng, -xAng) + M_PI);
  	
  	return z;
-}
+}*/

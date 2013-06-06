@@ -2,12 +2,12 @@
 #include "Pins.h"
 #include "PIDControl.h"
 
-static int kp, ki, kd;
+static double kp, ki, kd;
 static int lastError;
 static long int errorSum;
 static long int sataurateConstant;
 
-void setupPIDControl(int kpp, int kip, int kdp)
+void setupPIDControl(double kpp, double kip, double kdp)
 {
 	lastError = 0;
 	errorSum = 0;
@@ -35,9 +35,10 @@ int getPIDControl(int error)
 {
 	errorSum = errorSum + error;
 	errorSum = saturate(errorSum);
-	int p = kp*error;
-	int i = (ki*errorSum)>>10;
-	int d = kd*(error - lastError);
+
+	int p = (int)kp*error;
+	int i = (int)ki*errorSum;
+	int d = (int)kd*(error - lastError);
 	
 	lastError = error;
 	
