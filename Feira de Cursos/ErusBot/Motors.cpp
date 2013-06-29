@@ -1,0 +1,51 @@
+#include <Arduino.h>
+#include "Pins.h"
+#include "Motors.h"
+
+int motorPWMPins[2] = {PWM_LEFT, PWM_RIGHT};
+int motorDirPins[4] = {DIR_LEFT_1, DIR_LEFT_2, DIR_RIGHT_1, DIR_RIGHT_2};
+int motorMAXPWM[2] = {153, 153}; // DO NOT CHANGE!!! YOU MAY DESTROY THE MOTORS!!!
+
+void setupMotors(void)
+{
+	int i;
+	for(i=0; i<2; i++)
+	{
+		pinMode(motorPWMPins[i], OUTPUT);
+		pinMode(motorDirPins[2*i], OUTPUT);
+		pinMode(motorDirPins[2*i + 1], OUTPUT);
+
+		analogWrite(motorPWMPins[i], 0);
+		digitalWrite(motorDirPins[2*i], HIGH);
+		digitalWrite(motorDirPins[2*i + 1], LOW);
+	}
+}
+
+
+void setMotor(int motor, int velocity, uint8_t direction)
+{
+	
+	// This protects the motor to the rated volgate. DO NOT CHANGE!!!
+	if(velocity > motorMAXPWM[motor])
+	{
+		velocity = motorMAXPWM[motor];
+	}
+	
+	if(velocity < 0)
+	{
+		velocity = 0;
+	}
+
+	if(direction)
+	{
+		digitalWrite(motorDirPins[2*motor], LOW);
+		digitalWrite(motorDirPins[2*motor + 1], HIGH);
+	}
+	else
+	{
+		digitalWrite(motorDirPins[2*motor], HIGH);
+		digitalWrite(motorDirPins[2*motor + 1], LOW);
+	}
+		
+	analogWrite(motorPWMPins[motor], velocity);
+}
