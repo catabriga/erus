@@ -108,4 +108,20 @@ void loop(void)
 		setMotor(0, defaultVelocity, 1); // 1 - > Frente
 		setMotor(1, defaultVelocity, 1);
 	}
+	if(error < 0)
+	{
+		if(sensors[1] == 1)
+		{
+			setMotor(0, turnVelocity2, 1);
+			setMotor(1, turnVelocity2, 0);
+		}
+	}
+	else if (error > 0)
+	{
+		if(sensors[4] == 1)
+		{
+			setMotor(0, turnVelocity2, 0);
+			setMotor(1, turnVelocity2, 1);
+		}
+	}
 }
