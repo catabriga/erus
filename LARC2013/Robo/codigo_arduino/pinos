@@ -1,0 +1,29 @@
+
+
+## Ardumoto para motor do rover 5
+
+     Arduino         Ardumoto
+PWMA 13                 Escrito na placa
+PWMB 10                 Escrito na placa
+DirA 12                 Escrito na placa
+DirB 11                 Escrito na placa
+
+## USB Host Shield
+      Arduino      USB Host Shield
+MISO 50                12
+MOSI 51                11
+SCK 52                 13
+SS 53                  10
+PINO 9                 9
+PINO 8                 8
+PINO 7                 7
+
+Lembrar de ler o README contendo as informacoes para atualizar o pino 53 do arduino mega.
+ 
+
+## Garra
+
+Ardumoto
+
+
+## 
