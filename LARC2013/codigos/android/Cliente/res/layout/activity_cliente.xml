@@ -1,0 +1,180 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".Cliente" >
+
+    <ToggleButton
+        android:id="@+id/tbtnUp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="77dp"
+        android:background="@drawable/up_off"
+        android:scaleType="fitXY"
+        android:text="@null" 
+        android:textOff=""
+        android:textOn="" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" >
+
+        <RadioButton
+            android:id="@+id/radio5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5"
+            
+            />
+
+        <RadioButton
+        	android:id="@+id/radio4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4" />
+        
+        <RadioButton
+            android:id="@+id/radio3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3" />
+
+        <RadioButton
+            android:id="@+id/radio2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2" />
+        
+        <RadioButton
+            android:id="@+id/radio1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:checked="true" 
+            />
+    </RadioGroup>
+
+    <ToggleButton
+        android:id="@+id/tbtnDown"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignBottom="@+id/radioGroup1"
+        android:layout_alignLeft="@+id/tbtnUp"
+        android:background="@drawable/down_off"
+        android:scaleType="fitXY"
+        android:text="@null"
+        android:textOff=""
+        android:textOn="" />
+
+    <ToggleButton
+        android:id="@+id/tbtnLeft"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignBottom="@+id/tbtnDown"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/left_off"
+        android:scaleType="fitXY"
+        android:text="@null"
+        android:textOff=""
+        android:textOn="" />
+
+    <ToggleButton
+        android:id="@+id/tbtnRight"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignBaseline="@+id/tbtnLeft"
+        android:layout_alignBottom="@+id/tbtnLeft"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@+id/tbtnLeft"
+        android:background="@drawable/right_off"
+        android:scaleType="fitXY"
+        android:text="@null"
+        android:textOff=""
+        android:textOn="" />
+
+    <ToggleButton
+        android:id="@+id/tbtnBroom"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/tbtnUp"
+        android:background="@drawable/broom_off"
+        android:scaleType="fitXY"
+        android:text="@null"
+        android:textOff=""
+        android:textOn="" />
+
+    <ToggleButton
+        android:id="@+id/tbtnOpenGate"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/tbtnBroom"
+        android:layout_marginLeft="31dp"
+        android:layout_toRightOf="@+id/tbtnBroom"
+        android:background="@drawable/open_gate_off"
+        android:scaleType="fitXY"
+        android:text="@null"
+        android:textOff=""
+        android:textOn="" />
+
+    <ToggleButton
+        android:id="@+id/tbtnCloseGate"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/tbtnOpenGate"
+        android:layout_toRightOf="@+id/tbtnOpenGate"
+        android:layout_marginLeft="31dp"
+        android:background="@drawable/close_gate_off"
+        android:scaleType="fitXY"
+        android:text="@null"
+        android:textOff=""
+        android:textOn="" />
+
+    <ToggleButton
+        android:id="@+id/tbtnVibrate"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/tbtnCloseGate"
+        android:layout_toRightOf="@+id/tbtnCloseGate"
+        android:layout_marginLeft="31dp"
+        android:background="@drawable/vibrate_off"
+        android:scaleType="fitXY"
+        android:text="@null"
+        android:textOff=""
+        android:textOn="" />
+
+    <ToggleButton
+        android:id="@+id/tbtnOnOff"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignTop="@+id/tbtnVibrate"
+        android:layout_toRightOf="@+id/tbtnVibrate"
+        android:layout_marginLeft="31dp"
+        android:background="@drawable/off"
+        android:scaleType="fitXY"
+        android:text="@null"
+        android:textOff=""
+        android:textOn="" />
+
+    <TextView
+        android:id="@+id/tvPainel"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/tbtnOnOff"
+        android:layout_centerVertical="true"
+        android:background="@android:color/darker_gray"
+        android:paddingLeft="5dp"
+        android:text="US01: 00\nUS02: 00\nUS03: 00\nUS04: 00\nUS05: 00\nLDR: 00"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+</RelativeLayout>
