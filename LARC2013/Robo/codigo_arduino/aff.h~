@@ -1,6 +1,0 @@
-#ifndef ULTRASOUND_h
-#define ULTRASOUND_h
-
-void abc();
-
-#endif
