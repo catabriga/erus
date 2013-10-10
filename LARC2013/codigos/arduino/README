@@ -1,0 +1,7 @@
+1º - API "Adb" só funciona na versão do Arduino 0023.
+
+2º - Para que não de nenhum erro na hora de compilar seu código, favor inserir na linha 426 da biblioteca
+math.h, que será encontrada no seguinte diretório: "/usr/lib/avr/include/math.h, a informação "#undef round".
+
+3º - Para user o makefile do arduino é preciso instalar o arduino-mk, procure como 
+fazer isso para a sua distribuição de linux.
