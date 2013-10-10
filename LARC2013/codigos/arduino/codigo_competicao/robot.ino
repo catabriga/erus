@@ -41,8 +41,11 @@ Servo servo;
 uint8_t Estado[6]; //Vetor de Estados
 int motorPWMPins[3] = {PWM_R, PWM_L, PWM_VAS};
 int motorDirPins[3] = {DIR_R, DIR_L, DIR_VAS};
+*/
 
+void adbEventHandler(Connection * connection, adb_eventType event, uint16_t length, uint8_t * data);
 
+/*
 void setMotor(int motor, uint8_t velocity, uint8_t direction)
 {
 
