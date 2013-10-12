@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "Adb.h"
 #include "SPI.h"
 #include "Servo.h"

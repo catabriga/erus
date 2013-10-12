@@ -1,5 +1,6 @@
-package erus.android.robotbrain;
+package erus.open.robotbrain;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.text.Editable;
@@ -40,7 +41,40 @@ public class RobotBrain extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+<<<<<<< HEAD
 		//getMenuInflater().inflate(R.menu.robot_brain, menu);
+=======
+		//getMenuInflater().inflate(R.menu.bobot_brain, menu);
+>>>>>>> d93a712fa548bd55b6f68f2d9aa00be3b9a8b29c
 		return true;
+	}
+	
+	public class CameraFrontal extends AsyncTask<Integer, Integer, Integer> {
+
+		protected void onPreExecute()
+		{
+			
+		}
+		
+		@Override
+		protected Integer doInBackground(Integer... arg0) {
+			int soma = 0;
+			for (int i = 0; i < arg0[0]; i++)
+			{
+				soma++;
+				if (i % (float)((arg0[0]/20)) == 0)
+					publishProgress(i);//(int) ((i / (float) arg0[0]) * 100));
+			}
+			return soma;
+		}
+		
+		protected void onPostExecute(Integer result){
+			textView2.setText(Integer.toString(result));
+		}
+		
+	    protected void onProgressUpdate(Integer... arg) {
+	    	//String aux = textView1.getText().toString();
+	    	textView1.setText(Integer.toString(arg[0]) + "%");//Integer.toString((int) ((arg[0] / (float) arg[1] * 100))));
+	    }
 	}
 }
