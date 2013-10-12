@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 
 import android.app.Activity;
@@ -21,20 +20,18 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 {
 	private static final String TAG = "CodigoAndroidActivity";
 
-	//private ServerSocket serverSocketAndroid;
 	private ServerSocket serverSocketPC;
 	private ServerSocket serverSocketArduino;
-	//private Connection connectionAndroid;
+	
 	private Connection connectionArduino;
 	private Connection connectionPC;
-	//private MessageAssembler androidMessages;
+	
 	private MessageAssembler arduinoMessages;
     private MessageAssembler pcMessages;
     
 	
 	private final int portPC = 18550;
 	private final int portArduino = 4567;
-	//private final int portAndroid = 19000;
 		
 	private ErusView erusView;
 	private CameraProcessor cameraProcessor;
@@ -42,18 +39,12 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	private SensorManager mSM; 
 	private Accelerometer mAccelerometer;
 	private Compass mCompass;
-	private Encoder mEncoder;
 	private UltraSound mUltraSound;
-	private ClawButton mClawButton;
 	
 	private RobotBrain robotBrain;
 	
 	private boolean connectToPC;
 	private boolean connectToArduino;
-	private boolean connectToAndroid;
-	
-	//private long lastCameraMsg;
-	//private int lastFrameCount;
 	
 	private boolean running;
 	
@@ -81,9 +72,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 		mSM = (SensorManager)getSystemService(SENSOR_SERVICE);
 		mAccelerometer = new Accelerometer(mSM);
 		mCompass = new Compass(mSM);
-		mEncoder = new Encoder();
 		mUltraSound = new UltraSound();
-		mClawButton  = new ClawButton();
     }
     
     public void finishCreation()
@@ -102,10 +91,6 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 				
 		connectToPC = true;
 		connectToArduino = true;
-		connectToAndroid = false;
-
-		//lastCameraMsg = System.currentTimeMillis();
-		//lastFrameCount = -1;
 		
 		(new Thread(this)).start();
     }
@@ -156,9 +141,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	    		pcMessages.sendImageMessage(cameraProcessor.getFrameData(), cameraProcessor.getFrameWidth(), cameraProcessor.getFrameHeight());
 	    		pcMessages.sendAccelerometerMessage(toByta(mAccelerometer.getX()), toByta(mAccelerometer.getY()), toByta(mAccelerometer.getZ()));
 	    		pcMessages.sendCompassMessage(toByta(mCompass.getX()), toByta(mCompass.getY()), toByta(mCompass.getZ()));
-	    		pcMessages.sendEncoderMessage(toByta(mEncoder.getEncRight()), toByta(mEncoder.getEncLeft()));
 	    		pcMessages.sendUltraSoundMessage(toByta(mUltraSound.getUs1()), toByta(mUltraSound.getUs2()), toByta(mUltraSound.getUs3()), toByta(mUltraSound.getUs4()), toByta(mUltraSound.getUs5()), toByta(mUltraSound.getUs6()));
-	    		//initRobot();
 	    	}
 	    	catch (IOException e)
 			{
@@ -185,14 +168,8 @@ public class CodigoAndroidActivity extends Activity implements Runnable
     			connectionPC.close();
     		}
 			
-			//if(connectToAndroid)
-			//{
-			//	connectionAndroid.close();
-			//}
-			
 			serverSocketArduino.close();
 			serverSocketPC.close();
-			//serverSocketAndroid.close();
 		} 
     	catch (IOException e) 
     	{
@@ -200,33 +177,6 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 		}
     	
     }
-    /*
-    private void createColorFile()
-    {
-    	ColorCalibrator cc = new ColorCalibrator();
-		Scalar[] colors = new Scalar[4];
-		Scalar[] colorsRadius = new Scalar[4];
-		double[] areas = new double[4];
-		
-		colors[0] = new Scalar(225, 0, 0, 0);
-		colors[1] = new Scalar(225, 0, 0, 0);
-		colors[2] = new Scalar(225, 0, 0, 0);
-		colors[3] = new Scalar(225, 0, 0, 0);
-		
-		colorsRadius[0] = new Scalar(25, 50, 50, 0);
-		colorsRadius[1] = new Scalar(25, 50, 50, 0);
-		colorsRadius[2] = new Scalar(25, 50, 50, 0);
-		colorsRadius[3] = new Scalar(25, 50, 50, 0);
-		
-		areas[0] = 0.1;
-		areas[1] = 0.1;
-		areas[2] = 0.1;
-		areas[3] = 0.1;
-		
-		cc.writeCalibrationFile(colors, colorsRadius, areas);
-		
-    }
-    */
     
     private void createSockets()
     {
@@ -234,7 +184,6 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 		{	
 			serverSocketPC = new ServerSocket(portPC);			
 			serverSocketArduino = new ServerSocket(portArduino);
-			//serverSocketAndroid = new ServerSocket(portAndroid);
 		}
 		catch (IOException e) 
 		{
@@ -276,24 +225,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
     	
     	return false;
     }
-    
-    private boolean createAndroidMessageAssembler()
-    {
-    	if(connectToAndroid)
-		{/*
-			connectionAndroid = acceptConnection(serverSocketAndroid);
-			
-			if(connectionAndroid != null) // This function may return without the message assembler created
-			{
-				erusView.setAndroidConnected(true);
-				androidMessages = new MessageAssembler(connectionAndroid);
-				return true;
-			}*/
-		}
-    	
-    	return false;
-    }
-    
+       
     public void reconectArduino()
     {    
     	pcPrint("Reconectando");
@@ -394,21 +326,6 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 				sendSensorDataToPC(pcMessages);
 			}break;
 			
-			case Protocol.REQUEST_IMAGE_BACK:
-			{
-				if(connectToAndroid)
-				{
-					//pcPrint("Sending back image request");
-					/*
-					try {
-						connectionAndroid.sendMessage(msg, 0, msg.length);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}*/
-				}
-			}break;
-			
 			case Protocol.IMG_CALIB_DISK:
 			{
 				setImgCalibrationDisk(msg);
@@ -442,13 +359,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
     	//pcPrint(msg[0]+0+"");
     	
     	switch(msg[0])
-    	{
-	    	case Protocol.ENCODER:
-			{
-				mEncoder.refresh(msg);
-				erusView.setEncoder(mEncoder.getEncRight(), mEncoder.getEncLeft());
-			}break;
-			
+    	{	    	
 	    	case Protocol.ULTRASOUND:
 			{
 				mUltraSound.refresh(msg);
@@ -465,72 +376,9 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	    	{
 	    		
 	    	}break;
-	    	
-	    	case Protocol.CLAW_BUTTON:
-	    	{
-	    		mClawButton.refresh(msg);
-	    	}break;
-
     	}    	
     }
-    
-    private void handleAndroidMessages()
-    {	/*	
-    	while(connectToAndroid && androidMessages.messagesAvailable())
-		{
-			byte[] msg = androidMessages.getNextMessage();
-						
-			handleAndroidMessage(msg);
-		}			
-		*/
-    }
-    
-    private void handleAndroidMessage(byte[] msg)
-    {
-    	//pcPrint("Adroid msg: " + msg[0]+0);
-    	
-    	switch(msg[0])
-    	{
-	    	case Protocol.TRASH_POSITION:
-			{
-				Trash trash = new Trash();
-				ByteBuffer bb = ByteBuffer.allocate(4);
-				bb.put(msg, 1, 4);
-				bb.rewind();
-				trash.size = bb.getInt(0);
-				bb.rewind();
-				bb.put(msg, 4, 4);
-				bb.rewind();
-				trash.minY = bb.getInt(0);
-				bb.rewind();
-				bb.put(msg, 8, 4);
-				bb.rewind();
-				trash.position = new Point();				
-				trash.position.x = bb.getFloat(0);				
-				bb.rewind();
-				bb.put(msg, 12, 4);				
-				bb.rewind();
-				trash.position.y = bb.getFloat(0);				
-				robotBrain.setTrashPosition(trash);
-				
-				//pcPrint("Trash size: "+trash.size + " minY: " + trash.minY + " x: " + trash.position.x + " y: " + trash.position.y);
-			}break;
-			
-	    	case Protocol.CAMERA_MESSAGE:
-	    	{
-	    		if(connectToPC)
-	    		{
-	    			try {
-						this.connectionPC.sendMessage(msg, 0, msg.length);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	    		}	    		
-	    	}break;
-    	}    	
-    }
-    
+       
     private void initColors()
     {
     	byte[] color = new byte[49];
@@ -548,21 +396,6 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 		}
     }
     
-    private void sendInitialDataToAndroid()
-    {/*
-    	if(connectToAndroid)
-    	{
-    		byte[] color = new byte[49];
-    		mountColor(color);    		
-    		color[0]=Protocol.IMG_CALIB_MEM;
-    		try {
-    			connectionAndroid.sendMessage(color, 0, 49);
-    		} catch (IOException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}
-    	}*/
-    }
     
     private boolean checkStartButton()
     {
@@ -637,21 +470,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
         	}
     	}   
     }
-    
-    private void waitForAndroidConnection()
-    {    	
-    	if(connectToAndroid)
-		{		
-	    	while(true)
-	    	{
-    			if(createAndroidMessageAssembler())
-    			{   
-    				return;    				
-    			}
-    		}
-		}
-    }
-    
+      
     private void initRobotBrain()
     {
     	robotBrain = new RobotBrain(connectionArduino, connectionPC, erusView);
@@ -662,12 +481,11 @@ public class CodigoAndroidActivity extends Activity implements Runnable
     	initColors();
     	
     	createSockets(); 
-    	//waitForAndroidConnection();
+    	
     	waitForArduinoOrPCConnection();    	
     	waitForButtonOrPCConnection();
     	    	    	
 		sendInitialDataToPC();
-		sendInitialDataToAndroid();
     }
     
     private void waitInitialization()
@@ -699,9 +517,8 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 									
 			handlePCMessages();
 			handleArduinoMessages();
-			handleAndroidMessages();
 			
-			robotBrain.process(this, mAccelerometer, mCompass, mEncoder, mUltraSound,mClawButton, cameraProcessor);
+			robotBrain.process(this, mAccelerometer, mCompass, mUltraSound, cameraProcessor);
 			
 			//erusView.setTeste(true);
 		}	
@@ -776,29 +593,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	
 	public void sendColor2PC(Connection connectionPC, byte[] color)
 	{
-/*		byte color[] = new byte[49];
-		ByteBuffer bb = ByteBuffer.allocate(4);
-		Scalar[] colors=cameraProcessor.getColors();
-		Scalar[] colorsRadius=cameraProcessor.getColorsRadius();
-		double[] minContourAreas=cameraProcessor.getMinContourAreas();
-		
-		color[0] = Protocol.IMG_CALIB_CONF_AND;
-		
-		for(int i=0;i < ColorCalibrator.NUM_COLORS;i++)
-		{
-			for(int j=0; j < 4;j++)
-			{
-				color[j+1+i*12]=(byte)colors[i].val[j];
-				color[j+5+i*12]=(byte)colorsRadius[i].val[j];
-			}
-			bb.rewind();
-			bb.putFloat((float) minContourAreas[i]);
-			for(int k = 0; k < 4; k++)
-			{
-				bb.rewind();
-				color[i*12+k+9]=bb.get(k);
-			}
-		}*/
+
 		try {
 			connectionPC.sendMessage(color, 0, 49);
 		} catch (IOException e) {

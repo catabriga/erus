@@ -46,25 +46,20 @@ public class MessageAssembler
 			msgSizeTable[i] = 0;
 		}
 		
-		msgSizeTable[Protocol.MOTOR_FD] = 3;
-		msgSizeTable[Protocol.MOTOR_FE] = 3;
-		msgSizeTable[Protocol.MOTOR_TD] = 3;
-		msgSizeTable[Protocol.MOTOR_TE] = 3;
-		msgSizeTable[Protocol.MOTOR_UNICO] = 5;
-		msgSizeTable[Protocol.ULTRASOUND] = 7;
-		msgSizeTable[Protocol.CLAW_HORIZONTAL] = 3;
-		msgSizeTable[Protocol.CLAW_VERTICAL] = 3;
+	
+		msgSizeTable[Protocol.MOTOR_D] = 3;
+		msgSizeTable[Protocol.MOTOR_E] = 3;
+		msgSizeTable[Protocol.MOTOR_VASSOURA] = 3;
 		msgSizeTable[Protocol.SERVO] = 2;
-		msgSizeTable[Protocol.ENCODER] = 9;
-		msgSizeTable[Protocol.CLAW_BUTTON] = 2;
+		msgSizeTable[Protocol.MOTOR_VIBRADOR] = 2;
+		
+		msgSizeTable[Protocol.ULTRASOUND] = 7;		
 		msgSizeTable[Protocol.BUTTON_START] = 1;
 		msgSizeTable[Protocol.BUTTON_STOP] = 1;
 		msgSizeTable[Protocol.REQUEST_IMAGE] = 1;
 		msgSizeTable[Protocol.IMG_CALIB_DISK] = 49;
 		msgSizeTable[Protocol.IMG_CALIB_MEM] = 49;
 		msgSizeTable[Protocol.BUZZER] = 2;
-		msgSizeTable[Protocol.TRASH_POSITION] = 17;
-		msgSizeTable[Protocol.REQUEST_IMAGE_BACK] = 1;
 	}
 	
 	private int getMessageSize(int messageType)
