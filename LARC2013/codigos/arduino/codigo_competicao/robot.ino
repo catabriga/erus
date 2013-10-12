@@ -43,22 +43,6 @@ void setupVibrationMotor(void)
 	digitalWrite(VIB_PIN, LOW);
 }
 
-void setup()
-{
-
-	Serial.begin(57600); //inicia a porta serial 
-  
-	setupMotors();
-	setupServoMotor();
-	setupVibrationMotor();
-	setupUltrasound();
-	
-	messageAssembler = createMessageAssembler();
- 
-	ADB::init();
-	connection = ADB::addConnection("tcp:4568", true, adbEventHandler);  
-}
-
 void setMotor(int motor, uint8_t velocity, uint8_t direction)
 {
 
@@ -72,6 +56,24 @@ void setMotor(int motor, uint8_t velocity, uint8_t direction)
 	}	
 
 	analogWrite(motorPWMPins[motor], velocity);
+}
+
+void setup()
+{
+
+	Serial.begin(57600); //inicia a porta serial 
+  
+	setupMotors();
+	setMotor(0, 0, 1);
+	setMotor(1, 0, 1);
+	setupServoMotor();
+	setupVibrationMotor();
+	setupUltrasound();
+	
+	messageAssembler = createMessageAssembler();
+ 
+	ADB::init();
+	connection = ADB::addConnection("tcp:4567", true, adbEventHandler);  
 }
 
 void setServoMotor(uint8_t velocity)
@@ -164,8 +166,8 @@ void handleUltrasound(void)
 void loop()
 {
 	ADB::poll();
-	setMotor(0, 0, 1);
-	setMotor(1, 0, 1);
+	//setMotor(0, 0, 1);
+	//setMotor(1, 0, 1);
 	processMessages();
 	handleUltrasound();
 

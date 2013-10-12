@@ -21,7 +21,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 {
 	private static final String TAG = "CodigoAndroidActivity";
 
-	private ServerSocket serverSocketAndroid;
+	//private ServerSocket serverSocketAndroid;
 	private ServerSocket serverSocketPC;
 	private ServerSocket serverSocketArduino;
 	//private Connection connectionAndroid;
@@ -34,7 +34,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	
 	private final int portPC = 18550;
 	private final int portArduino = 4567;
-	private final int portAndroid = 19000;
+	//private final int portAndroid = 19000;
 		
 	private ErusView erusView;
 	private CameraProcessor cameraProcessor;
@@ -192,7 +192,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 			
 			serverSocketArduino.close();
 			serverSocketPC.close();
-			serverSocketAndroid.close();
+			//serverSocketAndroid.close();
 		} 
     	catch (IOException e) 
     	{
@@ -234,7 +234,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 		{	
 			serverSocketPC = new ServerSocket(portPC);			
 			serverSocketArduino = new ServerSocket(portArduino);
-			serverSocketAndroid = new ServerSocket(portAndroid);
+			//serverSocketAndroid = new ServerSocket(portAndroid);
 		}
 		catch (IOException e) 
 		{
@@ -662,7 +662,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
     	initColors();
     	
     	createSockets(); 
-    	waitForAndroidConnection();
+    	//waitForAndroidConnection();
     	waitForArduinoOrPCConnection();    	
     	waitForButtonOrPCConnection();
     	    	    	

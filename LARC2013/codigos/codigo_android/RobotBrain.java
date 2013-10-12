@@ -211,7 +211,7 @@ public class RobotBrain
 		int left255 = convert100To255(leftMotor, LIMIT_MOTOR_MOVEMENT);
 		int right255 = convert100To255(rightMotor, LIMIT_MOTOR_MOVEMENT);
 					
-		byte motorData[] = {0x14, (byte)left255, leftDirection, (byte)right255, rightDirection};
+		byte motorData[] = {0x11, (byte)left255, leftDirection, 0x12, (byte)right255, rightDirection};
 		
 		if(arduinoConnection != null)
 		{
@@ -2213,6 +2213,12 @@ public class RobotBrain
 	
 	public void startButtonPressed()
 	{
+		try {
+			pcPrint("botao");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		if(state == WAIT_START)
 		{
 			try 
@@ -2223,6 +2229,7 @@ public class RobotBrain
 			{
 				e.printStackTrace();
 			}
+		
 			
 			state = FORWARD;
 		}
