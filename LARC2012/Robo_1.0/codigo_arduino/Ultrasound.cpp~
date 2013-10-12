@@ -2,7 +2,7 @@
 #include "erus_pins.h"
 #include "NewPing.h" 
 
-#define SONAR_NUM     6 // Number or sensors.
+#define SONAR_NUM     3 // Number or sensors.
 #define MAX_DISTANCE 200 // Maximum distance (in cm) to ping.
 #define PING_INTERVAL 40 // Milliseconds between sensor pings (29ms is about the min to avoid cross-sensor echo).
 
@@ -28,14 +28,9 @@ void setPingTimes(int initialDelay)
 
 void setupUltrasound(void)
 {
-	sonar[0] = NewPing(US_TRIG_1, US_ECHO_1, MAX_DISTANCE);
-	sonar[1] = NewPing(US_TRIG_2, US_ECHO_2, MAX_DISTANCE);	
-	sonar[2] = NewPing(US_TRIG_3, US_ECHO_3, MAX_DISTANCE);
-	sonar[3] = NewPing(US_TRIG_4, US_ECHO_4, MAX_DISTANCE);	
-	sonar[4] = NewPing(US_TRIG_5, US_ECHO_5, MAX_DISTANCE);
-	sonar[5] = NewPing(US_TRIG_6, US_ECHO_6, MAX_DISTANCE);	
-
-
+	sonar[0] = NewPing(US_TRIG_RIGHT, US_ECHO_RIGHT, MAX_DISTANCE);
+	sonar[1] = NewPing(US_TRIG_LEFT, US_ECHO_LEFT, MAX_DISTANCE);	
+	sonar[2] = NewPing(US_TRIG_CENTER, US_ECHO_CENTER, MAX_DISTANCE);
 
 	currentSensor = 0;
 	reading = 1;
@@ -75,6 +70,7 @@ void loopUltrasound(void)
 				if (i == 0 && currentSensor == SONAR_NUM - 1)
 				{
 					oneSensorCycle(); // Sensor ping cycle complete do something with the results.
+					return;
 				}
 
 				sonar[currentSensor].timer_stop(); // Make sure previous timer is canceled before starting a new ping (insurance).

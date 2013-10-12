@@ -11,8 +11,8 @@
 #define DIR_VAS 34
 #define PWM_VAS 11
 
-#define PIN_VIB 23 //VIBRADOR
-#define PIN_SERVO 2
+#define VIB_PIN 23 //VIBRADOR
+#define SERVO_PIN 2
 
 
 //Ultrasons
