@@ -3,11 +3,14 @@
 #include "Servo.h"
 #include "erus_pins.h"
 #include "protocol.h"
+#include "Ultrasound.h"
 
 Servo servo;
 uint8_t Estado[6]; //Vetor de Estados
 int motorPWMPins[3] = {PWM_R, PWM_L, PWM_VAS};
 int motorDirPins[3] = {DIR_R, DIR_L, DIR_VAS};
+
+Connection * connection;
 
 
 void adbEventHandler(Connection * connection, adb_eventType event, uint16_t length, uint8_t * data);
@@ -28,7 +31,18 @@ void setMotor(int motor, uint8_t velocity, uint8_t direction)
 	analogWrite(motorPWMPins[motor], velocity);
 }
 
-Connection * connection;
+void handleUltrasound(void)
+{
+	loopUltrasound();
+
+	if(ultrasoundReadingReady())
+	{
+		unsigned int* uValues = getUltrasoundValues();
+		//sendUltrasoundMessage(uValues);
+		
+		startUltrasoundCycle();
+	}
+}
 
 void setup()
 {
@@ -70,25 +84,43 @@ void adbEventHandler(Connection * connection, adb_eventType event, uint16_t leng
 		{
 			case MOTOR_D:
 			{
-				setMotor(0, data[1], data[2]);
+				//setMotor(0, data[1], data[2]);
+				Serial.print(data[0]);
+				Serial.print(", ");
+				Serial.print(data[1]);
+				Serial.print(", ");
+				Serial.println(data[2]);
 				break;
 			}
 			
 			case MOTOR_E:
 			{
-				setMotor(1, data[1], data[2]);
+				//setMotor(1, data[1], data[2]);
+				Serial.print(data[0]);
+				Serial.print(", ");
+				Serial.print(data[1]);
+				Serial.print(", ");
+				Serial.println(data[2]);
 				break;
 			}
 			
 			case MOTOR_VAS:
 			{
-				setMotor(2, data[1], data[2]);
+				//setMotor(2, data[1], data[2]);
+				Serial.print(data[0]);
+				Serial.print(", ");
+				Serial.print(data[1]);
+				Serial.print(", ");
+				Serial.println(data[2]);
 				break;
 			}
 			
 			case SERVO:
 			{
-				servo.write(data[1]);
+				//servo.write(data[1]);
+				Serial.print(data[0]);
+				Serial.print(", ");
+				Serial.println(data[1]);
 				break;
 			}
 		}
