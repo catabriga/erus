@@ -43,19 +43,6 @@ void setupVibrationMotor(void)
 	digitalWrite(VIB_PIN, LOW);
 }
 
-void handleUltrasound(void)
-{
-	loopUltrasound();
-
-	if(ultrasoundReadingReady())
-	{
-		unsigned int* uValues = getUltrasoundValues();
-		//sendUltrasoundMessage(uValues);
-		
-		startUltrasoundCycle();
-	}
-}
-
 void setup()
 {
 
@@ -64,6 +51,7 @@ void setup()
 	setupMotors();
 	setupServoMotor();
 	setupVibrationMotor();
+	setupUltrasound();
 	
 	messageAssembler = createMessageAssembler();
  
@@ -164,12 +152,11 @@ void sendUltrasoundMessage(unsigned int* values)
 void handleUltrasound(void)
 {
 	loopUltrasound();
-
 	if(ultrasoundReadingReady())
 	{
 		unsigned int* uValues = getUltrasoundValues();
 		sendUltrasoundMessage(uValues);
-		
+
 		startUltrasoundCycle();
 	}
 }
@@ -177,7 +164,10 @@ void handleUltrasound(void)
 void loop()
 {
 	ADB::poll();
-	
-	
+	setMotor(0, 0, 1);
+	setMotor(1, 0, 1);
+	processMessages();
+	handleUltrasound();
+
 }		
 

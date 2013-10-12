@@ -30,25 +30,22 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private final byte esq2[] = {0x11,(byte) 0xFF,0};
 	private final byte dir1[] = {0x10,(byte) 0xFF,1};
 	private final byte dir2[] = {0x11,(byte) 0xFF,1};*/
-	private final byte forward[] = {0x14,(byte) 191,0,(byte) 191,1};
-	private final byte backward[] = {0x14,(byte) 191,1,(byte) 191,0};
-	private final byte right[] = {0x14,(byte) 0xFF,0,(byte) 0,0};
-	private final byte left[] = {0x14,(byte) 0,1,(byte) 0xFF,1};
+	private final byte forward[] = {0x11,(byte) 230, 1, 0x12, (byte) 191, 1};
+	private final byte backward[] = {0x11,(byte) 230, 0,0x12, (byte) 230, 0};
+	private final byte right[] = {0x11,(byte) 0, 0, 0x12, (byte) 230, 1};
+	private final byte left[] = {0x11,(byte) 0, 0, 0x12, (byte) 230, 1};
 	
 	
-	private final byte stop1[] = {0x10,0,0};
-	private final byte stop2[] = {0x11,0,0};
+	private final byte stop1[] = {0x11,0,0,0x12,0,0};
+	private final byte stop2[] = {0x11,0,0,0x12,0,0};
 	private final byte reqImg[] = {0x61};
-	private final byte openClaw[] = {0x31,(byte)0xAA,0};
-	private final byte closeClaw[] = {0x31,(byte)0xAA,1};
-	private final byte stopClaw[] = {0x31,0,0};
-	private final byte upClaw[] = {0x32,(byte)0xFF,0};
-	private final byte downClaw[] = {0x32,(byte)0xFF,1};
-	private final byte stopClaw2[] = {0x32,0,0};
+	
+	private final byte ligaVassoura[] = {0x13,(byte)230,1};
+	private final byte desligaVassoura[] = {0x13,0,1};
 
-	private final byte openDeposit[] = {0x33,(byte)0x5F};
-	private final byte closeDeposit[] = {0x33,(byte)0x55};
-	private final byte offDeposit[] = {0x33,(byte)0x5A};
+	private final byte openDeposit[] = {0x14,(byte) 77};
+	private final byte closeDeposit[] = {0x14,(byte) 90};
+	private final byte offDeposit[] = {0x14,(byte) 90};
 	
 	private byte imgCalibration[];
 	
@@ -83,6 +80,8 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	
 	private boolean openedDeposit = false;
 	private boolean closedDeposit = true;
+	
+	private boolean vassouraRodando = false;
 	
 	Fiscal()
 	{		
@@ -276,7 +275,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			{
 				//connection.sendMessage(esq1, 0, 3);
 				//connection.sendMessage(esq2, 0, 3);
-				connection.sendMessage(left, 0, 5);
+				connection.sendMessage(left, 0, 6);
 				stopping = 0;
 				
 				//System.out.println("1 "+System.currentTimeMillis());
@@ -285,7 +284,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			{
 				//connection.sendMessage(fr1, 0, 3);
 				//connection.sendMessage(fr2, 0, 3);
-				connection.sendMessage(forward, 0, 5);
+				connection.sendMessage(forward, 0, 6);
 				stopping = 0;
 				
 				//System.out.println("2 "+System.currentTimeMillis());
@@ -294,7 +293,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			{
 				//connection.sendMessage(dir1, 0, 3);
 				//connection.sendMessage(dir2, 0, 3);				
-				connection.sendMessage(right, 0, 5);
+				connection.sendMessage(right, 0, 6);
 				stopping = 0;
 				
 				//System.out.println("3 "+System.currentTimeMillis());
@@ -303,7 +302,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			{				
 				//connection.sendMessage(tr1, 0, 3);
 				//connection.sendMessage(tr2, 0, 3);
-				connection.sendMessage(backward, 0, 5);
+				connection.sendMessage(backward, 0, 6);
 				stopping = 0;
 				
 				//System.out.println("4 "+System.currentTimeMillis());
@@ -319,8 +318,8 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 				else if(stopping == 1 && System.currentTimeMillis() - stop_time > 10)
 				{
 					stopping = 2;
-					connection.sendMessage(stop1, 0, 3);
-					connection.sendMessage(stop2, 0, 3);				
+					connection.sendMessage(stop1, 0, 6);
+					connection.sendMessage(stop2, 0, 6);				
 				
 					//System.out.println("5 "+System.currentTimeMillis());
 				}
@@ -695,42 +694,17 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 				}
 			}break;
 			
-			case 79: // 'o' 
+			case 76://v -> liga ou desliga a vassoura
 			{
-				if (closedClaw)
+				if(vassouraRodando)
 				{
-					closedClaw = false;
-					openedClaw = true;
-					sendRequestOpenClaw();
+					vassouraRodando = false;
+					sendRequestDesligaVassoura();
+				} else {
+					vassouraRodando = true;
+					sendRequestLigaVassoura();
 				}
-			}break;
-			case 67: // 'c'
-			{
-				if (openedClaw)
-				{
-					closedClaw = true;
-					openedClaw = false;
-					sendRequestCloseClaw();
-				}
-			}break;
-			case 85: // 'u' 
-			{
-				if (lowClaw)
-				{
-					lowClaw = false;
-					highClaw = true;
-					sendRequestUpClaw();
-				}
-			}break;
-			
-			case 68: // 'd'
-			{
-				if (highClaw)
-				{
-					highClaw = false;
-					lowClaw = true;
-					sendRequestDownClaw();
-				}
+				
 			}break;
 			
 			case 69: // 'e'
@@ -753,11 +727,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 				}
 			}break;
 			
-			case 84: // 't' 
-			{
-				sendRequestStopClaw();
-				sendRequestStopClaw2();
-			}break;
+			
 		}
 		
 		//System.out.println(event.getKeyCode() + " " + event.getWhen());
@@ -864,63 +834,6 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 		}
 	}
 	
-	public void sendRequestOpenClaw()
-	{
-		try {
-			connection.sendMessage(openClaw, 0, 3);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void sendRequestCloseClaw()
-	{
-		try {
-			connection.sendMessage(closeClaw, 0, 3);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	public void sendRequestStopClaw()
-	{
-		try {
-			connection.sendMessage(stopClaw, 0, 3);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void sendRequestUpClaw()
-	{
-		try {
-			connection.sendMessage(upClaw, 0, 3);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	public void sendRequestDownClaw()
-	{
-		try {
-			connection.sendMessage(downClaw, 0, 3);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void sendRequestStopClaw2()
-	{
-		try {
-			connection.sendMessage(stopClaw2, 0, 3);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 	public void sendRequestOpenDeposit()
 	{
@@ -931,6 +844,27 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			e.printStackTrace();
 		}
 	}
+	
+	public void sendRequestLigaVassoura()
+	{
+		try {
+			connection.sendMessage(ligaVassoura, 0, 3);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendRequestDesligaVassoura()
+	{
+		try {
+			connection.sendMessage(desligaVassoura, 0, 3);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void sendRequestCloseDeposit()
 	{
 		try {

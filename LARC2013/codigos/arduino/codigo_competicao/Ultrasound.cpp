@@ -1,7 +1,7 @@
 #include "Ultrasound.h"
 #include "NewPing.h" 
 
-#define SONAR_NUM     2 // Number or sensors.
+#define SONAR_NUM     3 // Number or sensors.
 #define MAX_DISTANCE 200 // Maximum distance (in cm) to ping.
 #define PING_INTERVAL 40 // Milliseconds between sensor pings (29ms is about the min to avoid cross-sensor echo).
 
@@ -28,6 +28,7 @@ void setupUltrasound(void)
 {
 	sonar[0] = NewPing(US_TRIG_RIGHT, US_ECHO_RIGHT, MAX_DISTANCE);
 	sonar[1] = NewPing(US_TRIG_LEFT, US_ECHO_LEFT, MAX_DISTANCE);
+	sonar[2] = NewPing(US_TRIG_CENTER, US_ECHO_CENTER, MAX_DISTANCE);
 
 	currentSensor = 0;
 	reading = 1;

@@ -20,5 +20,7 @@
 #define US_ECHO_RIGHT 43
 #define US_TRIG_LEFT 44
 #define US_ECHO_LEFT 42
+#define US_TRIG_CENTER 47
+#define US_ECHO_CENTER 49
 
 #endif

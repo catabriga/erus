@@ -375,7 +375,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
     
     private boolean isArduinoDestination(byte[] msg)
     {
-    	if (msg[0] == 0x10 || msg[0] == 0x11 || msg[0] == 0x12 || msg[0] == 0x13 || msg[0] == 0x14 || msg[0] == 0x31 || msg[0] == 0x32 || msg[0] == 0x33 || msg[0] == 0x45)
+    	if (msg[0] == 0x11 || msg[0] == 0x12 || msg[0] == 0x13 || msg[0] == 0x14)
     	{	
     		return true; 	
     	}
