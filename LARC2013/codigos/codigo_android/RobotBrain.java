@@ -13,6 +13,12 @@ public class RobotBrain
 	private static final int LIMIT_MOTOR_MOVEMENT = 255;
 	private static final int LIMIT_MOTOR_CLAW = 191;
 	
+	public static final int ROBOT_CENTER_OFFSET = -25;
+	public static final int CATCHABLE_CAN_LIMIT_Y_MIN = 10;
+	public static final int CATCHABLE_CAN_LIMIT_Y_MAX = 30;
+	public static final int CATCHABLE_CAN_LIMIT_X = 40;
+	
+	
 	// States
 	private static final int NO_STATE = -1;
 	private static final int WAIT_START = 0;
