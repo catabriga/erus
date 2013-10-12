@@ -40,7 +40,7 @@ public class RobotBrain extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.bobot_brain, menu);
+		//getMenuInflater().inflate(R.menu.robot_brain, menu);
 		return true;
 	}
 }
