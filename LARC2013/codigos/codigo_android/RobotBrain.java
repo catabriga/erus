@@ -32,6 +32,7 @@ public class RobotBrain
 	
 	private int motorLeft;
 	private int motorRight;
+	private int motorVassoura;
 	private int motorDoor;
 	private int buzzer;
 	
@@ -50,6 +51,7 @@ public class RobotBrain
 		
 		motorLeft = -1;
 		motorRight = -1;
+		motorVassoura = -1;
 		motorDoor = -1;
 		buzzer = -1;
 		
@@ -155,6 +157,34 @@ public class RobotBrain
 		}
 	}
 	
+	private void setVassouraMovement(int speed) throws IOException
+	{	
+		byte Direction = 1;
+		if(speed < 0)
+		{
+			speed = -speed;
+			Direction = 0;
+		}
+		
+		if(motorVassoura == speed)
+		{
+			return;
+		}		
+		
+		this.motorVassoura = speed;
+		
+		int speed255 = convert100To255(speed, LIMIT_MOTOR_MOVEMENT);
+					
+		byte motorData[] = {0x13, (byte)speed255, Direction};
+		
+		if(arduinoConnection != null)
+		{
+			pcPrint("Vassoura Movement: "+ speed255);
+			
+			arduinoConnection.sendMessage(motorData, 0, 3);
+		}
+	}
+	
 	private void setMotorDoor(int speed) throws IOException
 	{
 		if(motorDoor == speed)
@@ -206,6 +236,7 @@ public class RobotBrain
 	private void stateStop(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
 		this.setMotorsMovement(0, 0);
+		this.setVassouraMovement(0);
 		this.setMotorDoor(0);
 		this.setBuzzer(0);		
 	}
@@ -218,6 +249,7 @@ public class RobotBrain
 		}
 		
 		this.setMotorsMovement(80, 80);
+		this.setVassouraMovement(80);
 		
 		if(System.currentTimeMillis() > time)
 		{

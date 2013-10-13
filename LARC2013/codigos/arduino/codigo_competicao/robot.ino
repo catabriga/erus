@@ -109,7 +109,7 @@ void processMessages()
 			
 			case MOTOR_VAS:
 			{
-				setMotor(3, msg[1], msg[2]);
+				setMotor(2, msg[1], msg[2]);
 			}break;
 			
 			case SERVO:

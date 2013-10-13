@@ -110,7 +110,7 @@ void processMessages()
 			
 			case MOTOR_VAS:
 			{
-				setMotor(3, msg[1], msg[2]);
+				setMotor(2, msg[1], msg[2]);
 			}break;
 			
 			case SERVO:
@@ -151,9 +151,24 @@ void sendUltrasoundMessage(unsigned int* values)
 	uint8_t data[4];
 	
 	data[0] = 0x31;
-	data[1] = (uint8_t) values[0];
-	data[2] = (uint8_t) values[1];
-	data[3] = (uint8_t) values[2];
+	if(values[0] > 255)
+	{
+		data[1] = (uint8_t) 255; //limite da distancia
+	} else {
+		data[1] = (uint8_t) values[0];
+	}
+	if(values[1] > 255)
+	{
+		data[2] = (uint8_t) 255; //limite da distancia
+	} else {
+		data[2] = (uint8_t) values[1];
+	}
+	if(values[2] > 255)
+	{
+		data[3] = (uint8_t) 255; //limite da distancia
+	} else {
+		data[3] = (uint8_t) values[2];
+	}
 	
 	connection->write(4, data);
 }
@@ -165,11 +180,11 @@ void handleUltrasound(void)
 	{
 		unsigned int* uValues = getUltrasoundValues();
 		sendUltrasoundMessage(uValues);
-		Serial.print(uValues[0]);
+		/*Serial.print(uValues[0]);
 		Serial.print(" ,");
 		Serial.print(uValues[1]);
 		Serial.print(" ,");
-		Serial.println(uValues[2]);
+		Serial.println(uValues[2]);*/
 
 		startUltrasoundCycle();
 	}
