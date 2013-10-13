@@ -43,7 +43,7 @@ public class MessageAssembler
 		msgSizeTable[0x13] = 3;	// MOTOR_VAS
 		msgSizeTable[0x14] = 2;	// SERVO
 		msgSizeTable[0x15] = 2;	// VIBRADOR
-		msgSizeTable[0x31] = 4;// ULTRASSOM
+		msgSizeTable[0x31] = 13;// ULTRASSOM
 		msgSizeTable[0x32] = 2;// BUTTON
 		msgSizeTable[0x64] = 49; //IMG_CALIB_CONF_ANDR
 	}

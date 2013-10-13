@@ -475,14 +475,15 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private int[] retrieveUltraSound(byte[] usMsg)
 	{
 		//int code = usMsg[0] & 0xFF;
-		
+		System.out.println(usMsg.length);
 		ByteBuffer bb = ByteBuffer.allocate(24);
 		
-		bb.put(usMsg, 1, 3);
+		bb.put(usMsg, 1, 12);
 		bb.rewind();
-		int data1 = bb.get();
-		int data2 = bb.get();
-		int data3 = bb.get();
+		int data1 = bb.getInt();
+		int data2 = bb.getInt();
+		int data3 = bb.getInt();
+		System.out.println(data1 + ", " + data2 + ", " + data3);
 		
 		int comp[] = {data1, data2, data3};
 		//System.out.println(dataRight+" "+dataLeft);

@@ -139,9 +139,8 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	    	{	    		
 	    		Log.i(TAG, "Sending Data to PC");		    		
 	    		pcMessages.sendImageMessage(cameraProcessor.getFrameData(), cameraProcessor.getFrameWidth(), cameraProcessor.getFrameHeight());
-	    		pcMessages.sendAccelerometerMessage(toByta(mAccelerometer.getX()), toByta(mAccelerometer.getY()), toByta(mAccelerometer.getZ()));
-	    		pcMessages.sendCompassMessage(toByta(mCompass.getX()), toByta(mCompass.getY()), toByta(mCompass.getZ()));
 	    		pcMessages.sendUltraSoundMessage(toByta(mUltraSound.getUs1()), toByta(mUltraSound.getUs2()), toByta(mUltraSound.getUs3()));
+	    		pcPrint(mUltraSound.getUs1() + ", " + mUltraSound.getUs2()+ ", " + mUltraSound.getUs3());
 	    	}
 	    	catch (IOException e)
 			{
@@ -307,7 +306,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
     
     private boolean isArduinoDestination(byte[] msg)
     {
-    	if (msg[0] == 0x11 || msg[0] == 0x12 || msg[0] == 0x13 || msg[0] == 0x14)
+    	if (msg[0] == 0x11 || msg[0] == 0x12 || msg[0] == 0x13 || msg[0] == 0x14 || msg[0] == 0x15)
     	{	
     		return true; 	
     	}
@@ -372,6 +371,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	    		robotBrain.startButtonPressed();
 	    	}break;
 	    	
+	    	 
     	}    	
     }
        

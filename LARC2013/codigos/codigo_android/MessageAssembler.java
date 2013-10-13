@@ -254,7 +254,7 @@ public class MessageAssembler
 	}
 	
 	public void sendUltraSoundMessage(byte[] data1, byte[] data2, byte[] data3) throws IOException
-	{			
+	{
 		byte[] usCode = {0x31};	
 		connection.sendMessage(usCode, 0, usCode.length);
 		connection.sendMessage(data1, 0, data1.length);
