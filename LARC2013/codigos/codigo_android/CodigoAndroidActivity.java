@@ -141,7 +141,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	    		pcMessages.sendImageMessage(cameraProcessor.getFrameData(), cameraProcessor.getFrameWidth(), cameraProcessor.getFrameHeight());
 	    		pcMessages.sendAccelerometerMessage(toByta(mAccelerometer.getX()), toByta(mAccelerometer.getY()), toByta(mAccelerometer.getZ()));
 	    		pcMessages.sendCompassMessage(toByta(mCompass.getX()), toByta(mCompass.getY()), toByta(mCompass.getZ()));
-	    		pcMessages.sendUltraSoundMessage(toByta(mUltraSound.getUs1()), toByta(mUltraSound.getUs2()), toByta(mUltraSound.getUs3()), toByta(mUltraSound.getUs4()), toByta(mUltraSound.getUs5()), toByta(mUltraSound.getUs6()));
+	    		pcMessages.sendUltraSoundMessage(toByta(mUltraSound.getUs1()), toByta(mUltraSound.getUs2()), toByta(mUltraSound.getUs3()));
 	    	}
 	    	catch (IOException e)
 			{
@@ -363,7 +363,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	    	case Protocol.ULTRASOUND:
 			{
 				mUltraSound.refresh(msg);
-				erusView.setUltraSound(mUltraSound.getUs1(), mUltraSound.getUs2(), mUltraSound.getUs3(), mUltraSound.getUs4(), mUltraSound.getUs5(), mUltraSound.getUs6());
+				erusView.setUltraSound(mUltraSound.getUs1(), mUltraSound.getUs2(), mUltraSound.getUs3());
 				//pcPrint(mUltraSound.getUs1() + " " + mUltraSound.getUs2()  + " " +  mUltraSound.getUs3()  + " " +  mUltraSound.getUs4() + " " +  mUltraSound.getUs5() + " " +  mUltraSound.getUs6());
 			}break;
 			
@@ -372,10 +372,6 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	    		robotBrain.startButtonPressed();
 	    	}break;
 	    	
-	    	case Protocol.BUTTON_STOP:
-	    	{
-	    		
-	    	}break;
     	}    	
     }
        

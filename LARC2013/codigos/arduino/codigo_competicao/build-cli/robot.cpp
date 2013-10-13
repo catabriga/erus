@@ -165,6 +165,11 @@ void handleUltrasound(void)
 	{
 		unsigned int* uValues = getUltrasoundValues();
 		sendUltrasoundMessage(uValues);
+		Serial.print(uValues[0]);
+		Serial.print(" ,");
+		Serial.print(uValues[1]);
+		Serial.print(" ,");
+		Serial.println(uValues[2]);
 
 		startUltrasoundCycle();
 	}
@@ -175,7 +180,7 @@ void loop()
 	ADB::poll();
 	
 	processMessages();
-	//handleUltrasound();
+	handleUltrasound();
 
 }		
 

@@ -53,13 +53,12 @@ public class MessageAssembler
 		msgSizeTable[Protocol.SERVO] = 2;
 		msgSizeTable[Protocol.MOTOR_VIBRADOR] = 2;
 		
-		msgSizeTable[Protocol.ULTRASOUND] = 7;		
+		msgSizeTable[Protocol.ULTRASOUND] = 4;		
 		msgSizeTable[Protocol.BUTTON_START] = 1;
-		msgSizeTable[Protocol.BUTTON_STOP] = 1;
 		msgSizeTable[Protocol.REQUEST_IMAGE] = 1;
 		msgSizeTable[Protocol.IMG_CALIB_DISK] = 49;
 		msgSizeTable[Protocol.IMG_CALIB_MEM] = 49;
-		msgSizeTable[Protocol.BUZZER] = 2;
+
 	}
 	
 	private int getMessageSize(int messageType)
@@ -254,16 +253,13 @@ public class MessageAssembler
 		
 	}
 	
-	public void sendUltraSoundMessage(byte[] data1, byte[] data2, byte[] data3, byte[] data4, byte[] data5, byte[] data6) throws IOException
+	public void sendUltraSoundMessage(byte[] data1, byte[] data2, byte[] data3) throws IOException
 	{			
-		byte[] usCode = {0x30};	
+		byte[] usCode = {0x31};	
 		connection.sendMessage(usCode, 0, usCode.length);
 		connection.sendMessage(data1, 0, data1.length);
 		connection.sendMessage(data2, 0, data2.length);
 		connection.sendMessage(data3, 0, data3.length);
-		connection.sendMessage(data4, 0, data4.length);
-		connection.sendMessage(data5, 0, data5.length);
-		connection.sendMessage(data6, 0, data6.length);
 		
 		//Log.i(TAG, "data.length = "+data.length);
 	}

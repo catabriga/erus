@@ -21,7 +21,7 @@ public class ErusView extends View
 	private double xC, yC, zC;//Compass
 	private double xA, yA, zA;//Accelerometer
 	private int encRight, encLeft;
-	private int us1, us2, us3, us4, us5, us6;
+	private int us1, us2, us3;
 	
 	private long lastUpdate;
 	
@@ -92,14 +92,11 @@ public class ErusView extends View
 		}
 	}
 
-	public void setUltraSound(int data1, int data2, int data3, int data4, int data5, int data6)
+	public void setUltraSound(int data1, int data2, int data3)
 	{
 		us1 = data1;
 		us2 = data2;
 		us3 = data3;
-		us4 = data4;
-		us5 = data5;
-		us6 = data6;
 		//if( System.currentTimeMillis() - lastUpdate > 100)
 		//{
 			this.postInvalidate();
@@ -188,7 +185,7 @@ public class ErusView extends View
 		
 		canvas.drawText("Encoder: "+encRight+ " " + encLeft, 4, 250, redPaint);
 		
-		canvas.drawText("Ultrasound: "+us1+ " " + us2+ " " + us3+ " " + us4+ " " + us5+ " " + us6, 4, 300, redPaint);
+		canvas.drawText("Ultrasound: "+us1+ " " + us2+ " " + us3, 4, 300, redPaint);
 		
 
 		Paint paintColor = new Paint();

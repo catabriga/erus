@@ -18,7 +18,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private Connection connection;
 	private MessageAssembler msgAssembler;
 	
-	private final String IP_ANDROID = "192.168.0.116";
+	private final String IP_ANDROID = "192.168.0.117";
 	//private final String IP_ANDROID = "192.168.43.1";	//galaxy
 	private final int PORT_ANDROID = 18550;
 	
@@ -62,7 +62,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private float[] Accelerometer = {0, 0, 0};
 	private float[] Compass = {0, 0, 0};
 	private int[] Encoder = {0, 0};
-	private int[] UltraSound = {0, 0, 0, 0, 0, 0};
+	private int[] UltraSound = {0, 0, 0};
 	
 	private boolean lockRequestImage = false;
 	private boolean writeDisk = false;
@@ -202,7 +202,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			g.drawString("Accelerometer: "+Accelerometer[0]+" ,"+Accelerometer[1]+" ,"+Accelerometer[2], 20, 240);
 			g.drawString("Compass: "+(57.3 * Math.atan2(Compass[1], Compass[2])), 20, 260);
 			g.drawString("Encoder: "+Encoder[0]+" ,"+Encoder[1], 20, 280);
-			g.drawString("Ultrassound: "+UltraSound[0]+" ,"+UltraSound[1]+" ,"+UltraSound[2]+" ,"+UltraSound[3]+" ,"+UltraSound[4]+" ,"+UltraSound[5], 20, 300);
+			g.drawString("Ultrassound: "+UltraSound[0]+" ,"+UltraSound[1]+" ,"+UltraSound[2], 20, 300);
 			
 			g.drawString("Cor 1:", 20, 340);
 			g.drawString("Cor 2:", 20, 360);
@@ -220,7 +220,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			g.drawString("Accelerometer: "+Accelerometer[0]+" ,"+Accelerometer[1]+" ,"+Accelerometer[2], 20, 240);
 			g.drawString("Compass: "+Compass[0]+" ,"+Compass[1]+" ,"+Compass[2]+" ,"+(57.3 * Math.atan2(Compass[1], Compass[2])), 20, 260);
 			g.drawString("Encoder: "+Encoder[0]+" ,"+Encoder[1], 20, 280);
-			g.drawString("Ultrassound: "+UltraSound[0]+" ,"+UltraSound[1]+" ,"+UltraSound[2]+" ,"+UltraSound[3]+" ,"+UltraSound[4]+" ,"+UltraSound[5], 20, 300);
+			g.drawString("Ultrassound: "+UltraSound[0]+" ,"+UltraSound[1]+" ,"+UltraSound[2], 20, 300);
 			ByteBuffer bb = ByteBuffer.allocate(4);
 			bb.put(imgCalibration, 9, 4);
 			bb.rewind();
@@ -478,16 +478,13 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 		
 		ByteBuffer bb = ByteBuffer.allocate(24);
 		
-		bb.put(usMsg, 1, 24);
+		bb.put(usMsg, 1, 3);
 		bb.rewind();
-		int data1 = bb.getInt();
-		int data2 = bb.getInt();
-		int data3 = bb.getInt();
-		int data4 = bb.getInt();
-		int data5 = bb.getInt();
-		int data6 = bb.getInt();
+		int data1 = bb.get();
+		int data2 = bb.get();
+		int data3 = bb.get();
 		
-		int comp[] = {data1, data2, data3, data4, data5, data6};
+		int comp[] = {data1, data2, data3};
 		//System.out.println(dataRight+" "+dataLeft);
 		return comp;
 	}
@@ -521,7 +518,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			{
 				Encoder = retrieveEncoder(msg);
 			}break;
-			case 0x30:
+			case 0x31:
 			{
 				UltraSound = retrieveUltraSound(msg);
 			}break;
@@ -778,9 +775,9 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			{
 				//sendRequestOffDeposit();
 			}break;
-			case 79: // 'o' 
+			case 76: // 'v' 
 			{
-			//	sendRequestStopClaw();
+			//	vassoura
 			}break;
 			case 67: // 'c'
 			{

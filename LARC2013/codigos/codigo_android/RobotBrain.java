@@ -28,8 +28,6 @@ public class RobotBrain
 	
 	private int motorLeft;
 	private int motorRight;
-	private int motorClawOpenClose;
-	private int motorClawUpDown;
 	private int motorDoor;
 	private int buzzer;
 	private int lastState;
@@ -47,8 +45,6 @@ public class RobotBrain
 		
 		motorLeft = -1;
 		motorRight = -1;
-		motorClawOpenClose = -1;
-		motorClawUpDown = -1;
 		motorDoor = -1;
 		buzzer = -1;
 		
@@ -153,61 +149,6 @@ public class RobotBrain
 		}
 	}
 	
-	private void setMotorClawOpenClose(int power) throws IOException
-	{		
-		if(motorClawOpenClose == power)
-		{
-			return;
-		}
-		
-		this.motorClawOpenClose = power;
-		
-		byte direction = 0;
-		if(power < 0)
-		{
-			power = -power;
-			direction = 1;
-		}
-		
-		int power255 = convert100To255(power, LIMIT_MOTOR_CLAW);
-		
-		
-		byte clawData[] = {0x31, (byte)power255, direction};
-		
-		if(arduinoConnection != null)
-		{
-			arduinoConnection.sendMessage(clawData, 0, 3);
-		}
-	}
-
-	private void setMotorClawUpDown(int power) throws IOException
-	{
-		power = -power;
-		
-		if(motorClawUpDown == power)
-		{
-			return;
-		}
-		
-		this.motorClawUpDown = power;
-		
-		byte direction = 0;
-		if(power < 0)
-		{
-			power = -power;
-			direction = 1;
-		}
-		
-		int power255 = convert100To255(power, LIMIT_MOTOR_CLAW);
-				
-		byte clawData[] = {0x32, (byte)power255, direction};
-		
-		if(arduinoConnection != null)
-		{
-			arduinoConnection.sendMessage(clawData, 0, 3);
-		}
-	}
-	
 	private void setMotorDoor(int speed) throws IOException
 	{
 		if(motorDoor == speed)
@@ -259,8 +200,6 @@ public class RobotBrain
 	private void stateStop(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
 		this.setMotorsMovement(0, 0);
-		this.setMotorClawOpenClose(0);
-		this.setMotorClawUpDown(0);
 		this.setMotorDoor(0);
 		this.setBuzzer(0);		
 	}

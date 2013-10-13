@@ -38,20 +38,13 @@ public class MessageAssembler
 			msgSizeTable[i] = 0;
 		}
 		
-		msgSizeTable[0x10] = 3;	// MOTOR_FD
-		msgSizeTable[0x11] = 3;	// MOTOR_FE
-		msgSizeTable[0x12] = 3;	// MOTOR_TD
-		msgSizeTable[0x13] = 3;	// MOTOR_TE
-		msgSizeTable[0x14] = 5;	// MOTOR_ÚNICO
-		msgSizeTable[0x20] = 13;// ACELEROMETRO
-		msgSizeTable[0x21] = 13;// BUSSOLA
-		msgSizeTable[0x30] = 25;// ULTRASSOM
-		msgSizeTable[0x31] = 3; //GARRA HORIZONTAL
-		msgSizeTable[0x32] = 3; // GARRA VERTICAL
-		msgSizeTable[0x33] = 2; // SERVO
-		msgSizeTable[0x40] = 9;// ENCODERS
-		msgSizeTable[0x42] = 2; // CLAW_BUTTON
-		msgSizeTable[0x45] = 2; // BUZZER
+		msgSizeTable[0x11] = 3;	// MOTOR_D
+		msgSizeTable[0x12] = 3;	// MOTOR_E
+		msgSizeTable[0x13] = 3;	// MOTOR_VAS
+		msgSizeTable[0x14] = 2;	// SERVO
+		msgSizeTable[0x15] = 2;	// VIBRADOR
+		msgSizeTable[0x31] = 4;// ULTRASSOM
+		msgSizeTable[0x32] = 2;// BUTTON
 		msgSizeTable[0x64] = 49; //IMG_CALIB_CONF_ANDR
 	}
 	
