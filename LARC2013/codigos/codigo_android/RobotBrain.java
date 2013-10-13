@@ -47,7 +47,7 @@ public class RobotBrain
 		
 	public RobotBrain(Connection arduinoConnection, Connection pcConnection, ErusView erusView)
 	{
-		state = FORWARD;
+		state = GO_TO_CAN;
 		lastState = NO_STATE;
 		
 		time = System.currentTimeMillis();
@@ -237,10 +237,10 @@ public class RobotBrain
 		{
 			Can can = itr.next();
 			
-			pcPrint("getNearest -> minY: "+can.minY + " maxSand: "+cameraProcessor.getMaxSand());
+			//pcPrint("getNearest -> minY: "+can.minY + " maxSand: "+cameraProcessor.getMaxSand());
 			
 			//if(can.minY < cameraProcessor.getBlueLimits() && can.minY < cameraProcessor.getTrashPosition().y)
-			if(can.minY < cameraProcessor.getMaxSand() && (can.minY < trash.position.y || trash.position.y < 0))
+			//if(can.minY < cameraProcessor.getMaxSand() && (can.minY < trash.position.y || trash.position.y < 0))
 			{
 				if(nearestCan == null)
 				{
@@ -268,28 +268,31 @@ public class RobotBrain
 		
 		int width = cameraProcessor.getFrameWidth();		
 		int robotCenter = width/2 + ROBOT_CENTER_OFFSET;		
-		int error = 0;
-		
+		double error = 0;
+		double k = -100.0;
+	
 		if(can != null)
 		{
-			error = ((int)can.position.x) - robotCenter;
+			error = k*((can.position.x) - robotCenter)/(double)width;
 		}
 				
 		if(can == null)
 		{
 			//state = SEARCH_CAN;
 			setMotorsMovement(0, 0);
+			setVassouraMovement(0);
 		}
 		else
 		{			
-			if(System.currentTimeMillis() > time + 100)
+			if(System.currentTimeMillis() > time + 100)	// This is done so that the robot is not sent a million messages a second
 			{
 				time = System.currentTimeMillis();				
 				
-				int powerLeft = 70 + error;
-				int powerRight = 70 - error;
+				int powerLeft = (int)(70 + error);
+				int powerRight = (int)(70 - error);
 								
-				setMotorsMovement( powerLeft, powerRight);					
+				setMotorsMovement(powerLeft, powerRight);
+				setVassouraMovement(70);
 			}
 		}
 						
