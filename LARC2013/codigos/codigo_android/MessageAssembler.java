@@ -54,7 +54,7 @@ public class MessageAssembler
 		msgSizeTable[Protocol.MOTOR_VIBRADOR] = 2;
 		
 		msgSizeTable[Protocol.ULTRASOUND] = 4;		
-		msgSizeTable[Protocol.BUTTON_START] = 1;
+		msgSizeTable[Protocol.BUTTON_START] = 2;
 		msgSizeTable[Protocol.REQUEST_IMAGE] = 1;
 		msgSizeTable[Protocol.IMG_CALIB_DISK] = 49;
 		msgSizeTable[Protocol.IMG_CALIB_MEM] = 49;

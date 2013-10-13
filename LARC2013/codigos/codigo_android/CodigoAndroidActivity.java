@@ -401,7 +401,10 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 						
 			if(msg[0] == Protocol.BUTTON_START)
 			{
-				return true;
+				if(msg[1] == 1)
+				{
+					return true;
+				}
 			}
 		}
     	

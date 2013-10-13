@@ -7,6 +7,8 @@
 #include "Ultrasound.h"
 #include "MessageAssembler.h"
 
+#define DEBOUNCE_COUNT 4
+
 Servo servoMotor;
 int motorPWMPins[3] = {PWM_R, PWM_L, PWM_VAS};
 int motorDirPins[3] = {DIR_R, DIR_L, DIR_VAS};
@@ -30,6 +32,11 @@ void setupMotors(void)
 		analogWrite(motorPWMPins[i], 0);
 		digitalWrite(motorDirPins[i], HIGH);
 	}
+}
+
+void setupButton(void)
+{
+	pinMode(START_BUTTON, INPUT);
 }
 
 void setupServoMotor(void)
@@ -190,12 +197,52 @@ void handleUltrasound(void)
 	}
 }
 
+void sendButtonMessage(int state)
+{
+	uint8_t data[2] = {0x32, 0};
+	
+	if(state)
+	{
+		data[0] = 1;
+	}
+
+	Serial.print("Button: ");
+	Serial.print(data[0]);
+	Serial.print("\n\r");
+
+	connection->write(2, data);
+}
+
+void handleButton(void)
+{
+	static int lastButtonState = 0;
+	static int stateCount = 0;
+
+	int buttonState = digitalRead(START_BUTTON);
+
+	if(buttonState != lastButtonState)
+	{		
+		stateCount = 0;		
+	}
+	else if(stateCount <= DEBOUNCE_COUNT)
+	{
+		if(stateCount == DEBOUNCE_COUNT)
+		{
+			sendButtonMessage(buttonState);
+		}
+		stateCount++;
+	}
+
+	lastButtonState = buttonState;
+}
+
 void loop()
 {
 	ADB::poll();
 	
 	processMessages();
 	handleUltrasound();
+	handleButton();
 
 }		
 
