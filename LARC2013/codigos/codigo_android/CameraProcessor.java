@@ -270,7 +270,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		matYUV.put(0, 0, data);
 		Imgproc.cvtColor(matYUV, matRGB, Imgproc.COLOR_YUV420sp2RGB, 3);
 				
-		int imgBoundary = matRGB.rows()/2;
+		int imgBoundary = 4*matRGB.rows()/5;
 		
 		Mat subMatRGB = matRGB.submat( 0, imgBoundary, 0, matRGB.cols());
 		CBD.process(subMatRGB);

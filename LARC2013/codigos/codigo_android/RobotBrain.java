@@ -1,6 +1,8 @@
 package erus.android.erusbot;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 import org.opencv.core.Point;
 
@@ -12,7 +14,7 @@ public class RobotBrain
 	
 	private static final int LIMIT_MOTOR_MOVEMENT = 255;
 	
-	public static final int ROBOT_CENTER_OFFSET = -25;
+	public static final int ROBOT_CENTER_OFFSET = 0;
 	public static final int CATCHABLE_CAN_LIMIT_Y_MIN = 10;
 	public static final int CATCHABLE_CAN_LIMIT_Y_MAX = 30;
 	public static final int CATCHABLE_CAN_LIMIT_X = 40;
@@ -24,6 +26,7 @@ public class RobotBrain
 	private static final int STOP = 1002;
 	
 	private static final int FORWARD = 2001;
+	private static final int GO_TO_CAN = 2002;
 	
 	private int state;
 	private int lastState;
@@ -193,6 +196,76 @@ public class RobotBrain
 		}
 	}
 	
+	private Can getNearestCan(CameraProcessor cameraProcessor) throws IOException
+	{
+		Can nearestCan = null;
+		
+		List<Can> listOfCans = cameraProcessor.getListOfCans();
+		Iterator<Can> itr = listOfCans.iterator();
+		
+		while(itr.hasNext())
+		{
+			Can can = itr.next();
+			
+			pcPrint("getNearest -> minY: "+can.minY + " maxSand: "+cameraProcessor.getMaxSand());
+			
+			//if(can.minY < cameraProcessor.getBlueLimits() && can.minY < cameraProcessor.getTrashPosition().y)
+			if(can.minY < cameraProcessor.getMaxSand() && (can.minY < trash.position.y || trash.position.y < 0))
+			{
+				if(nearestCan == null)
+				{
+					nearestCan = can;
+				}
+				else if(can.minY < nearestCan.minY)
+				{					
+					nearestCan = can;
+				}
+			}
+		}
+		
+		return nearestCan;
+		
+	}
+	
+	private void stateGoToCan(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{			
+		if(lastState != GO_TO_CAN)
+		{
+			time = System.currentTimeMillis() - 1000;
+		}
+		
+		Can can = getNearestCan(cameraProcessor);
+		
+		int width = cameraProcessor.getFrameWidth();		
+		int robotCenter = width/2 + ROBOT_CENTER_OFFSET;		
+		int error = 0;
+		
+		if(can != null)
+		{
+			error = ((int)can.position.x) - robotCenter;
+		}
+				
+		if(can == null)
+		{
+			//state = SEARCH_CAN;
+			setMotorsMovement(0, 0);
+		}
+		else
+		{			
+			if(System.currentTimeMillis() > time + 100)
+			{
+				time = System.currentTimeMillis();				
+				
+				int powerLeft = 70 + error;
+				int powerRight = 70 - error;
+								
+				setMotorsMovement( powerLeft, powerRight);					
+			}
+		}
+						
+		//checkBlueLimits(acc,comp,enc,ult,cb,cameraProcessor);
+		//checkObstacle(cameraProcessor, ult);
+	}
 	
 	private void stateWaitStart(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{							
@@ -240,6 +313,9 @@ public class RobotBrain
 				break;
 				case FORWARD:
 					stateForward(acc, comp, ult, cameraProcessor);
+				break;
+				case GO_TO_CAN:
+					stateGoToCan(acc, comp, ult, cameraProcessor);
 				break;
 			}
 			
