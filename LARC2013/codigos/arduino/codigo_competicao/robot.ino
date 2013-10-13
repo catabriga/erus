@@ -174,7 +174,7 @@ void loop()
 	ADB::poll();
 	
 	processMessages();
-	//handleUltrasound();
+	handleUltrasound();
 
 }		
 
