@@ -22,7 +22,7 @@ void adbEventHandler(Connection * connection, adb_eventType event, uint16_t leng
 void setupMotors(void)
 {
 	int i;
-	for(i=0; i<4; i++)
+	for(i=0; i<3; i++)
 	{
 		pinMode(motorPWMPins[i], OUTPUT);
 		pinMode(motorDirPins[i], OUTPUT);
@@ -44,36 +44,15 @@ void setupVibrationMotor(void)
 	digitalWrite(VIB_PIN, LOW);
 }
 
-void handleUltrasound(void)
-{
-	loopUltrasound();
-
-	if(ultrasoundReadingReady())
-	{
-		unsigned int* uValues = getUltrasoundValues();
-		//sendUltrasoundMessage(uValues);
-		
-		startUltrasoundCycle();
-	}
-}
-
-void setup()
-{
-
-	Serial.begin(57600); //inicia a porta serial 
-  
-	setupMotors();
-	setupServoMotor();
-	setupVibrationMotor();
-	
-	messageAssembler = createMessageAssembler();
- 
-	ADB::init();
-	connection = ADB::addConnection("tcp:4568", true, adbEventHandler);  
-}
-
 void setMotor(int motor, uint8_t velocity, uint8_t direction)
 {
+	Serial.print("Set motor: ");
+	Serial.print(motor);
+	Serial.print(" ");
+	Serial.print(velocity);
+	Serial.print(" ");
+	Serial.print(direction);
+	Serial.print("\n\r");
 
 	if(direction)
 	{
@@ -85,6 +64,22 @@ void setMotor(int motor, uint8_t velocity, uint8_t direction)
 	}	
 
 	analogWrite(motorPWMPins[motor], velocity);
+}
+
+void setup()
+{
+
+	Serial.begin(57600); //inicia a porta serial 
+  
+	setupMotors();
+	setupServoMotor();
+	setupVibrationMotor();
+	setupUltrasound();
+	
+	messageAssembler = createMessageAssembler();
+ 
+	ADB::init();
+	connection = ADB::addConnection("tcp:4567", true, adbEventHandler);  
 }
 
 void setServoMotor(uint8_t velocity)
@@ -99,7 +94,8 @@ void processMessages()
 	if(msg != NULL)
 	{		        
 		uint8_t msgType = msg[0];
-
+	
+				
 		switch(msgType)
 		{
 			case MOTOR_D:
@@ -165,12 +161,11 @@ void sendUltrasoundMessage(unsigned int* values)
 void handleUltrasound(void)
 {
 	loopUltrasound();
-
 	if(ultrasoundReadingReady())
 	{
 		unsigned int* uValues = getUltrasoundValues();
 		sendUltrasoundMessage(uValues);
-		
+
 		startUltrasoundCycle();
 	}
 }
@@ -179,6 +174,8 @@ void loop()
 {
 	ADB::poll();
 	
-	
+	processMessages();
+	//handleUltrasound();
+
 }		
 

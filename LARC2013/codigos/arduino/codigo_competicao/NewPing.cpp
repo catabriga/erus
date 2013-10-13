@@ -112,8 +112,8 @@ void NewPing::timer_us(unsigned int frequency, void (*userFunc)(void)) {
 	OCR4C = min((frequency>>2) - 1, 255); // Every count is 4uS, so divide by 4 (bitwise shift right 2) subtract one, then make sure we don't go over 255 limit.
 	TIMSK4 = (1<<TOIE4);                  // Enable Timer4 interrupt.
 #else
-	OCR2A = min((frequency>>2) - 1, 255); // Every count is 4uS, so divide by 4 (bitwise shift right 2) subtract one, then make sure we don't go over 255 limit.
-	TIMSK2 |= (1<<OCIE2A);                // Enable Timer2 interrupt.
+	OCR4A = min((frequency>>2) - 1, 255); // Every count is 4uS, so divide by 4 (bitwise shift right 2) subtract one, then make sure we don't go over 255 limit.
+	TIMSK4 |= (1<<OCIE4A);                // Enable Timer2 interrupt.
 #endif
 }
 
@@ -128,8 +128,8 @@ void NewPing::timer_ms(unsigned long frequency, void (*userFunc)(void)) {
 	OCR4C = 249;         // Every count is 4uS, so 1ms = 250 counts - 1.
 	TIMSK4 = (1<<TOIE4); // Enable Timer4 interrupt.
 #else
-	OCR2A = 249;           // Every count is 4uS, so 1ms = 250 counts - 1.
-	TIMSK2 |= (1<<OCIE2A); // Enable Timer2 interrupt.
+	OCR4A = 249;           // Every count is 4uS, so 1ms = 250 counts - 1.
+	TIMSK4 |= (1<<OCIE4A); // Enable Timer2 interrupt.
 #endif
 }
 
@@ -138,7 +138,7 @@ void NewPing::timer_stop() { // Disable timer interrupt.
 #if defined (__AVR_ATmega32U4__) // Use Timer4 for ATmega32U4 (Teensy/Leonardo).
 	TIMSK4 = 0;
 #else
-	TIMSK2 &= ~(1<<OCIE2A);
+	TIMSK4 &= ~(1<<OCIE4A);
 #endif
 }
 
@@ -152,10 +152,15 @@ void NewPing::timer_setup() {
 	TCNT4 = 0;    // Reset Timer4 counter.
 #else
 	timer_stop();           // Disable Timer2 interrupt.
-	ASSR &= ~(1<<AS2);      // Set clock, not pin.
-	TCCR2A = (1<<WGM21);    // Set Timer2 to CTC mode.
-	TCCR2B = (1<<CS22);     // Set Timer2 prescaler to 64 (4uS/count, 4uS-1020uS range).
-	TCNT2 = 0;              // Reset Timer2 counter.
+	
+	TCCR4A &= ~(1<<WGM41|1<<WGM40);    // Set Timer4 to CTC mode.
+	TCCR4B &= ~(1<<WGM43);
+	TCCR4B |= (1<<WGM42);
+	
+	TCCR4B &= ~(1<<CS42);     // Set Timer4 prescaler to 64 (4uS/count, 4uS-1020uS range).
+	TCCR4B |= (1<<CS41|1<<CS40);
+	
+	TCNT4 = 0;              // Reset Timer4 counter.
 #endif
 }
 
@@ -171,7 +176,7 @@ void NewPing::timer_ms_cntdwn() {
 #if defined (__AVR_ATmega32U4__) // Use Timer4 for ATmega32U4 (Teensy/Leonardo).
 ISR(TIMER4_OVF_vect) {
 #else
-ISR(TIMER2_COMPA_vect) {
+ISR(TIMER4_COMPA_vect) {
 #endif
 	if(intFunc) intFunc(); // If wrapped function is set, call it.
 }

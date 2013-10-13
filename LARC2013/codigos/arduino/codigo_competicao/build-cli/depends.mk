@@ -57,7 +57,7 @@ build-cli/SPI.o: SPI.cpp \
  /usr/share/arduino/hardware/arduino/cores/arduino/Print.h \
  /usr/share/arduino/hardware/arduino/cores/arduino/Printable.h \
  /usr/share/arduino/hardware/arduino/cores/arduino/new.h
-build-cli/Ultrasound.o: Ultrasound.cpp Ultrasound.h NewPing.h \
+build-cli/Ultrasound.o: Ultrasound.cpp Ultrasound.h erus_pins.h NewPing.h \
  /usr/share/arduino/hardware/arduino/cores/arduino/Arduino.h \
  /usr/share/arduino/hardware/arduino/cores/arduino/binary.h \
  /usr/share/arduino/hardware/arduino/cores/arduino/WCharacter.h \

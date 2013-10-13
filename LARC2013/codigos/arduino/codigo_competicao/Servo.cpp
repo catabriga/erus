@@ -112,14 +112,14 @@ ISR(TIMER3_COMPA_vect)
   handle_interrupts(_timer3, &TCNT3, &OCR3A); 
 }
 #endif
-
+/*
 #if defined(_useTimer4)
 ISR(TIMER4_COMPA_vect) 
 {
   handle_interrupts(_timer4, &TCNT4, &OCR4A); 
 }
 #endif
-
+*/
 #if defined(_useTimer5)
 ISR(TIMER5_COMPA_vect) 
 {
@@ -182,7 +182,7 @@ static void initISR(timer16_Sequence_t timer)
 #endif  
   }
 #endif
-
+/*
 #if defined (_useTimer4)
   if(timer == _timer4) {
     TCCR4A = 0;             // normal counting mode 
@@ -192,7 +192,7 @@ static void initISR(timer16_Sequence_t timer)
     TIMSK4 =  _BV(OCIE4A) ; // enable the output compare interrupt
   }    
 #endif
-
+*/
 #if defined (_useTimer5)
   if(timer == _timer5) {
     TCCR5A = 0;             // normal counting mode 
