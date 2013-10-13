@@ -207,14 +207,6 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		Core.circle(mat, trashPosition, 3, BLUE);
 	}*/
 	
-	private void drawCatchableRegion(Mat mat)
-	{		
-		int width = getFrameWidth();		
-		int robotCenter = width/2 + RobotBrain.ROBOT_CENTER_OFFSET;		
-				
-		Core.rectangle(mat, new Point(robotCenter - RobotBrain.CATCHABLE_CAN_LIMIT_X/2, RobotBrain.CATCHABLE_CAN_LIMIT_Y_MIN), new Point(robotCenter + RobotBrain.CATCHABLE_CAN_LIMIT_X/2, RobotBrain.CATCHABLE_CAN_LIMIT_Y_MAX), new Scalar(0, 255, 0, 0));
-	}
-	
 	private void calculateBlueLimits(List<MatOfPoint> blueContour)
 	{	
 		Iterator<MatOfPoint> itr = blueContour.iterator();
@@ -296,7 +288,6 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 			}		
 			Core.line(matRGB, new Point(0, imgBoundary), new Point(matRGB.cols(), imgBoundary), new Scalar(255, 0, 0, 0));
 			drawBlueLimits(matRGB);
-			drawCatchableRegion(matRGB);
 			drawCansLocations(matRGB);
 //			drawTrashLocations(matRGB);
 			

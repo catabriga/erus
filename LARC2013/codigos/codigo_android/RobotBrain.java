@@ -11,7 +11,6 @@ public class RobotBrain
 	private static final String TAG = "RobotBrain";
 	
 	private static final int LIMIT_MOTOR_MOVEMENT = 255;
-	private static final int LIMIT_MOTOR_CLAW = 191;
 	
 	public static final int ROBOT_CENTER_OFFSET = -25;
 	public static final int CATCHABLE_CAN_LIMIT_Y_MIN = 10;
@@ -24,13 +23,17 @@ public class RobotBrain
 	private static final int WAIT_START = 0;
 	private static final int STOP = 1002;
 	
+	private static final int FORWARD = 2001;
+	
 	private int state;
+	private int lastState;
+	
+	private long time;
 	
 	private int motorLeft;
 	private int motorRight;
 	private int motorDoor;
 	private int buzzer;
-	private int lastState;
 	
 	private Connection arduinoConnection;
 	private Connection pcConnection;
@@ -40,8 +43,10 @@ public class RobotBrain
 		
 	public RobotBrain(Connection arduinoConnection, Connection pcConnection, ErusView erusView)
 	{
-		state = WAIT_START;
+		state = FORWARD;
 		lastState = NO_STATE;
+		
+		time = System.currentTimeMillis();
 		
 		motorLeft = -1;
 		motorRight = -1;
@@ -110,6 +115,7 @@ public class RobotBrain
 	private void setMotorsMovement(int leftMotor, int rightMotor) throws IOException
 	{	
 		leftMotor = -leftMotor;
+		rightMotor = -rightMotor;
 		
 		leftMotor = checkPowerLimits(leftMotor);
 		rightMotor = checkPowerLimits(rightMotor);
@@ -139,13 +145,13 @@ public class RobotBrain
 		int left255 = convert100To255(leftMotor, LIMIT_MOTOR_MOVEMENT);
 		int right255 = convert100To255(rightMotor, LIMIT_MOTOR_MOVEMENT);
 					
-		byte motorData[] = {0x11, (byte)left255, leftDirection, 0x12, (byte)right255, rightDirection};
+		byte motorData[] = {0x12, (byte)left255, leftDirection, 0x11, (byte)right255, rightDirection};
 		
 		if(arduinoConnection != null)
 		{
 			pcPrint("Motor Movement: "+ left255 + " " + right255);
 			
-			arduinoConnection.sendMessage(motorData, 0, 5);
+			arduinoConnection.sendMessage(motorData, 0, 6);
 		}
 	}
 	
@@ -204,6 +210,21 @@ public class RobotBrain
 		this.setBuzzer(0);		
 	}
 	
+	private void stateForward(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		if(lastState != FORWARD)
+		{
+			time = System.currentTimeMillis() + 1500;
+		}
+		
+		this.setMotorsMovement(80, 80);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = STOP;
+		}		
+	}
+	
 	public void process(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor)
 	{
 		int lastStateTemp = state;
@@ -216,6 +237,9 @@ public class RobotBrain
 				break;			
 				case STOP:
 					stateStop(acc, comp, ult, cameraProcessor);
+				break;
+				case FORWARD:
+					stateForward(acc, comp, ult, cameraProcessor);
 				break;
 			}
 			
