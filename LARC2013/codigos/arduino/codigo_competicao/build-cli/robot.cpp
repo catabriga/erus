@@ -7,6 +7,8 @@
 #include "Ultrasound.h"
 #include "MessageAssembler.h"
 
+#define DEBOUNCE_COUNT 4
+
 Servo servoMotor;
 int motorPWMPins[3] = {PWM_R, PWM_L, PWM_VAS};
 int motorDirPins[3] = {DIR_R, DIR_L, DIR_VAS};
@@ -30,6 +32,11 @@ void setupMotors(void)
 		analogWrite(motorPWMPins[i], 0);
 		digitalWrite(motorDirPins[i], HIGH);
 	}
+}
+
+void setupButton(void)
+{
+	pinMode(START_BUTTON, INPUT);
 }
 
 void setupServoMotor(void)
@@ -110,7 +117,7 @@ void processMessages()
 			
 			case MOTOR_VAS:
 			{
-				setMotor(3, msg[1], msg[2]);
+				setMotor(2, msg[1], msg[2]);
 			}break;
 			
 			case SERVO:
@@ -151,9 +158,24 @@ void sendUltrasoundMessage(unsigned int* values)
 	uint8_t data[4];
 	
 	data[0] = 0x31;
-	data[1] = (uint8_t) values[0];
-	data[2] = (uint8_t) values[1];
-	data[3] = (uint8_t) values[2];
+	if(values[0] > 255)
+	{
+		data[1] = (uint8_t) 255; //limite da distancia
+	} else {
+		data[1] = (uint8_t) values[0];
+	}
+	if(values[1] > 255)
+	{
+		data[2] = (uint8_t) 255; //limite da distancia
+	} else {
+		data[2] = (uint8_t) values[1];
+	}
+	if(values[2] > 255)
+	{
+		data[3] = (uint8_t) 255; //limite da distancia
+	} else {
+		data[3] = (uint8_t) values[2];
+	}
 	
 	connection->write(4, data);
 }
@@ -165,14 +187,53 @@ void handleUltrasound(void)
 	{
 		unsigned int* uValues = getUltrasoundValues();
 		sendUltrasoundMessage(uValues);
-		Serial.print(uValues[0]);
+		/*Serial.print(uValues[0]);
 		Serial.print(" ,");
 		Serial.print(uValues[1]);
 		Serial.print(" ,");
-		Serial.println(uValues[2]);
+		Serial.println(uValues[2]);*/
 
 		startUltrasoundCycle();
 	}
+}
+
+void sendButtonMessage(int state)
+{
+	uint8_t data[2] = {0x32, 0};
+	
+	if(state)
+	{
+		data[0] = 1;
+	}
+
+	Serial.print("Button: ");
+	Serial.print(data[0]);
+	Serial.print("\n\r");
+
+	connection->write(2, data);
+}
+
+void handleButton(void)
+{
+	static int lastButtonState = 0;
+	static int stateCount = 0;
+
+	int buttonState = digitalRead(START_BUTTON);
+
+	if(buttonState != lastButtonState)
+	{		
+		stateCount = 0;		
+	}
+	else if(stateCount <= DEBOUNCE_COUNT)
+	{
+		if(stateCount == DEBOUNCE_COUNT)
+		{
+			sendButtonMessage(buttonState);
+		}
+		stateCount++;
+	}
+
+	lastButtonState = buttonState;
 }
 
 void loop()
@@ -181,6 +242,7 @@ void loop()
 	
 	processMessages();
 	handleUltrasound();
+	handleButton();
 
 }		
 
