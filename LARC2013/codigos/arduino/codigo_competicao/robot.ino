@@ -21,7 +21,7 @@ void adbEventHandler(Connection * connection, adb_eventType event, uint16_t leng
 void setupMotors(void)
 {
 	int i;
-	for(i=0; i<4; i++)
+	for(i=0; i<3; i++)
 	{
 		pinMode(motorPWMPins[i], OUTPUT);
 		pinMode(motorDirPins[i], OUTPUT);
@@ -45,6 +45,13 @@ void setupVibrationMotor(void)
 
 void setMotor(int motor, uint8_t velocity, uint8_t direction)
 {
+	Serial.print("Set motor: ");
+	Serial.print(motor);
+	Serial.print(" ");
+	Serial.print(velocity);
+	Serial.print(" ");
+	Serial.print(direction);
+	Serial.print("\n\r");
 
 	if(direction)
 	{
@@ -64,8 +71,6 @@ void setup()
 	Serial.begin(57600); //inicia a porta serial 
   
 	setupMotors();
-	setMotor(0, 0, 1);
-	setMotor(1, 0, 1);
 	setupServoMotor();
 	setupVibrationMotor();
 	setupUltrasound();
@@ -88,7 +93,8 @@ void processMessages()
 	if(msg != NULL)
 	{		        
 		uint8_t msgType = msg[0];
-
+	
+				
 		switch(msgType)
 		{
 			case MOTOR_D:
@@ -166,10 +172,9 @@ void handleUltrasound(void)
 void loop()
 {
 	ADB::poll();
-	//setMotor(0, 0, 1);
-	//setMotor(1, 0, 1);
+	
 	processMessages();
-	handleUltrasound();
+	//handleUltrasound();
 
 }		
 

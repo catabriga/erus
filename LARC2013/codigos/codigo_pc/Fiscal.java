@@ -18,13 +18,14 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private Connection connection;
 	private MessageAssembler msgAssembler;
 	
-	private final String IP_ANDROID = "192.168.0.115";
+	private final String IP_ANDROID = "192.168.0.114";
 	//private final String IP_ANDROID = "192.168.43.1";	//galaxy
 	private final int PORT_ANDROID = 18550;
 	
 	/*private final byte fr1[] = {0x10,(byte) 0xFF,0};
 	private final byte fr2[] = {0x11,(byte) 0xFF,1};	
 	private final byte tr1[] = {0x10,(byte) 0xFF,1};
+	private final String IP_ANDROID = "192.168.0.115
 	private final byte tr2[] = {0x11,(byte) 0xFF,0};
 	private final byte esq1[] = {0x10,(byte) 0xFF,0};
 	private final byte esq2[] = {0x11,(byte) 0xFF,0};

@@ -249,11 +249,11 @@ public class RobotBrain
 	
 	private void stateWaitStart(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{							
-		this.setMotorsMovement(0, 0);
-		this.setMotorClawOpenClose(0);
-		this.setMotorClawUpDown(0);
-		this.setMotorDoor(0);
-		this.setBuzzer(0);
+		//this.setMotorsMovement(0, 0);
+		//this.setMotorClawOpenClose(0);
+		//this.setMotorClawUpDown(0);
+		//this.setMotorDoor(0);
+		//this.setBuzzer(0);
 	}
 	
 	private void stateStop(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException

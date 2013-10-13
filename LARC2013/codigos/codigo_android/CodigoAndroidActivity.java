@@ -287,7 +287,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 				{
 					if(connectToArduino)
 					{
-						//pcPrint(msg[0]+"");
+						pcPrint("Sending to Arduino: "+msg[0]);
 						connectionArduino.sendMessage(msg, 0, msg.length);
 					}	
 				}
