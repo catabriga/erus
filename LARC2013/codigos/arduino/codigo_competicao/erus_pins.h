@@ -14,6 +14,10 @@
 #define VIB_PIN 23 //VIBRADOR
 #define SERVO_PIN 2
 
+// TIMER4 is being used for newping, so cant drive PWM at these pins
+#define DONT_USE_PIN_6_FOR_PWM 6
+#define DONT_USE_PIN_7_FOR_PWM 7
+#define DONT_USE_PIN_8_FOR_PWM 8
 
 //Ultrasons
 #define US_TRIG_RIGHT 45
