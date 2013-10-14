@@ -3,6 +3,7 @@ package erus.android.erusbot;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.opencv.core.Point;
 
@@ -14,7 +15,7 @@ public class RobotBrain
 	
 	private static final int LIMIT_MOTOR_MOVEMENT = 255;
 	
-	public static final int ROBOT_CENTER_OFFSET = 0;
+	public static final double ROBOT_CENTER_OFFSET = 0.05;
 	public static final int CATCHABLE_CAN_LIMIT_Y_MIN = 10;
 	public static final int CATCHABLE_CAN_LIMIT_Y_MAX = 30;
 	public static final int CATCHABLE_CAN_LIMIT_X = 40;
@@ -27,6 +28,7 @@ public class RobotBrain
 	
 	private static final int FORWARD = 2001;
 	private static final int GO_TO_CAN = 2002;
+	private static final int SEARCH_CAN = 2003;
 	
 	private int state;
 	private int lastState;
@@ -47,7 +49,7 @@ public class RobotBrain
 		
 	public RobotBrain(Connection arduinoConnection, Connection pcConnection, ErusView erusView)
 	{
-		state = GO_TO_CAN;
+		state = WAIT_START;
 		lastState = NO_STATE;
 		
 		time = System.currentTimeMillis();
@@ -241,6 +243,7 @@ public class RobotBrain
 			
 			//if(can.minY < cameraProcessor.getBlueLimits() && can.minY < cameraProcessor.getTrashPosition().y)
 			//if(can.minY < cameraProcessor.getMaxSand() && (can.minY < trash.position.y || trash.position.y < 0))
+			if(can.minY < cameraProcessor.getMaxSand())
 			{
 				if(nearestCan == null)
 				{
@@ -267,9 +270,9 @@ public class RobotBrain
 		Can can = getNearestCan(cameraProcessor);
 		
 		int width = cameraProcessor.getFrameWidth();		
-		int robotCenter = width/2 + ROBOT_CENTER_OFFSET;		
+		int robotCenter = width/2 + (int)(ROBOT_CENTER_OFFSET*width);		
 		double error = 0;
-		double k = -100.0;
+		double k = -50.0;
 	
 		if(can != null)
 		{
@@ -333,6 +336,39 @@ public class RobotBrain
 		}		
 	}
 	
+	private void stateSearchCan(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		if(lastState != SEARCH_CAN)
+		{
+			time = System.currentTimeMillis() - 1000;
+		}
+		
+		Can can = getNearestCan(cameraProcessor);
+		
+		Random random = new Random();
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN;
+		}
+		else
+		{
+			if(System.currentTimeMillis() > time + 1000)	// This is done so that the robot is not sent a million messages a second
+			{
+				if(random.nextBoolean()) // vai pra direita
+				{
+					setMotorsMovement(45, 70);
+					setVassouraMovement(70);
+				}
+				else
+				{
+					setMotorsMovement(70, 45);
+					setVassouraMovement(70);
+				}
+			}
+		}
+	}
+	
 	public void process(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor)
 	{
 		int lastStateTemp = state;
@@ -351,6 +387,9 @@ public class RobotBrain
 				break;
 				case GO_TO_CAN:
 					stateGoToCan(acc, comp, ult, cameraProcessor);
+				break;
+				case SEARCH_CAN:
+					stateSearchCan(acc, comp, ult, cameraProcessor);
 				break;
 			}
 			
@@ -389,7 +428,15 @@ public class RobotBrain
 			}
 		
 			
-			state = STOP;
+			state = GO_TO_CAN;
+		}
+		else if (state == STOP)
+		{
+			state = GO_TO_CAN;
+		}
+		else
+		{
+			state = STOP;	
 		}
 	}
 	

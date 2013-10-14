@@ -263,6 +263,11 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		Core.line(mat, new Point(0, minBlue), new Point(mat.cols(), minBlue), new Scalar(255, 128, 50, 0));	
 	}
 	
+	private void drawSandLimits(Mat mat)
+	{
+		Core.line(mat, new Point(0, maxSand), new Point(mat.cols(), maxSand), new Scalar(255, 128, 50, 0));	
+	}
+	
 	public void onPreviewFrame(byte[] data, Camera camera) 
 	{
 		//Log.i("PreviewFrame", "data length: "+data.length);
@@ -287,7 +292,8 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 				Imgproc.drawContours(matRGB, CBD.getContours()[i], -1, invertColor(CBD.getRGBColors()[i]));
 			}		
 			Core.line(matRGB, new Point(0, imgBoundary), new Point(matRGB.cols(), imgBoundary), new Scalar(255, 0, 0, 0));
-			drawBlueLimits(matRGB);
+			//drawBlueLimits(matRGB);
+			drawSandLimits(matRGB);
 			drawCansLocations(matRGB);
 //			drawTrashLocations(matRGB);
 			
