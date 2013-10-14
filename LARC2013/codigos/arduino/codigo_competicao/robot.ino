@@ -8,6 +8,9 @@
 
 #define DEBOUNCE_COUNT 4
 
+int ligado = 0;
+int desligado = 0;
+
 Servo servoMotor;
 int motorPWMPins[3] = {PWM_R, PWM_L, PWM_VAS};
 int motorDirPins[3] = {DIR_R, DIR_L, DIR_VAS};
@@ -36,6 +39,7 @@ void setupMotors(void)
 void setupButton(void)
 {
 	pinMode(START_BUTTON, INPUT);
+	digitalWrite(START_BUTTON, HIGH);
 }
 
 void setupServoMotor(void)
@@ -81,6 +85,7 @@ void setup()
 	setupServoMotor();
 	setupVibrationMotor();
 	setupUltrasound();
+	setupButton();
 	
 	messageAssembler = createMessageAssembler();
  
@@ -200,16 +205,17 @@ void sendButtonMessage(int state)
 {
 	uint8_t data[2] = {0x32, 0};
 	
-	if(state)
+	if(!state)
 	{
-		data[0] = 1;
+		data[1] = 1;
 	}
 
-	Serial.print("Button: ");
+	/*Serial.print("Button: ");
 	Serial.print(data[0]);
-	Serial.print("\n\r");
-
-	connection->write(2, data);
+	Serial.print("\n\r");*/
+	
+	Serial.println(data[1]);
+	//connection->write(2, data);
 }
 
 void handleButton(void)
@@ -228,6 +234,7 @@ void handleButton(void)
 		if(stateCount == DEBOUNCE_COUNT)
 		{
 			sendButtonMessage(buttonState);
+			
 		}
 		stateCount++;
 	}
