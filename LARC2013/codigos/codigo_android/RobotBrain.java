@@ -3,6 +3,7 @@ package erus.android.erusbot;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.opencv.core.Point;
 
@@ -27,6 +28,7 @@ public class RobotBrain
 	
 	private static final int FORWARD = 2001;
 	private static final int GO_TO_CAN = 2002;
+	private static final int SEARCH_CAN = 2003;
 	
 	private int state;
 	private int lastState;
@@ -334,6 +336,39 @@ public class RobotBrain
 		}		
 	}
 	
+	private void stateSearchCan(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		if(lastState != SEARCH_CAN)
+		{
+			time = System.currentTimeMillis() - 1000;
+		}
+		
+		Can can = getNearestCan(cameraProcessor);
+		
+		Random random = new Random();
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN;
+		}
+		else
+		{
+			if(System.currentTimeMillis() > time + 1000)	// This is done so that the robot is not sent a million messages a second
+			{
+				if(random.nextBoolean()) // vai pra direita
+				{
+					setMotorsMovement(45, 70);
+					setVassouraMovement(70);
+				}
+				else
+				{
+					setMotorsMovement(70, 45);
+					setVassouraMovement(70);
+				}
+			}
+		}
+	}
+	
 	public void process(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor)
 	{
 		int lastStateTemp = state;
@@ -352,6 +387,9 @@ public class RobotBrain
 				break;
 				case GO_TO_CAN:
 					stateGoToCan(acc, comp, ult, cameraProcessor);
+				break;
+				case SEARCH_CAN:
+					stateSearchCan(acc, comp, ult, cameraProcessor);
 				break;
 			}
 			

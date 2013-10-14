@@ -368,7 +368,10 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 			
 	    	case Protocol.BUTTON_START:
 	    	{
-	    		robotBrain.startButtonPressed();
+	    		if(msg[1] == 1)
+	    		{
+	    			robotBrain.startButtonPressed();
+	    		}
 	    	}break;
 	    	
 	    	 
