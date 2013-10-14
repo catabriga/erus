@@ -211,12 +211,10 @@ void sendButtonMessage(int state)
 		data[1] = 1;
 	}
 
-	/*Serial.print("Button: ");
-	Serial.print(data[0]);
-	Serial.print("\n\r");*/
-	
+	Serial.print("Button: ");
 	Serial.println(data[1]);
-	//connection->write(2, data);
+	
+	connection->write(2, data);
 }
 
 void handleButton(void)
