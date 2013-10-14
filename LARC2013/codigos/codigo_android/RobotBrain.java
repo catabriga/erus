@@ -29,6 +29,8 @@ public class RobotBrain
 	private static final int FORWARD = 2001;
 	private static final int GO_TO_CAN = 2002;
 	private static final int SEARCH_CAN = 2003;
+	private static final int LEFT = 2004;
+	private static final int RIGHT = 2005;
 	
 	private int state;
 	private int lastState;
@@ -281,9 +283,9 @@ public class RobotBrain
 				
 		if(can == null)
 		{
-			//state = SEARCH_CAN;
-			setMotorsMovement(0, 0);
-			setVassouraMovement(0);
+			state = SEARCH_CAN;
+			//setMotorsMovement(0, 0);
+			//setVassouraMovement(0);
 		}
 		else
 		{			
@@ -338,11 +340,6 @@ public class RobotBrain
 	
 	private void stateSearchCan(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
-		if(lastState != SEARCH_CAN)
-		{
-			time = System.currentTimeMillis() - 1000;
-		}
-		
 		Can can = getNearestCan(cameraProcessor);
 		
 		Random random = new Random();
@@ -353,19 +350,63 @@ public class RobotBrain
 		}
 		else
 		{
-			if(System.currentTimeMillis() > time + 1000)	// This is done so that the robot is not sent a million messages a second
+			pcPrint("search Can");
+			if(random.nextBoolean()) // vai pra direita
 			{
-				if(random.nextBoolean()) // vai pra direita
-				{
-					setMotorsMovement(45, 70);
-					setVassouraMovement(70);
-				}
-				else
-				{
-					setMotorsMovement(70, 45);
-					setVassouraMovement(70);
-				}
+				state = RIGHT;
 			}
+			else
+			{
+				state = LEFT;
+			}
+		}
+	}
+	
+	private void stateLeft(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		Can can = getNearestCan(cameraProcessor);
+		
+		if(lastState != LEFT)
+		{
+			time = System.currentTimeMillis() - 1000;
+		}
+		
+		if(System.currentTimeMillis() > time)
+		{
+			
+			setMotorsMovement(-70, 70);
+			setVassouraMovement(70);
+			time = System.currentTimeMillis() + 1500;
+		}
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN;
+			return;
+		}
+	}
+	
+	private void stateRight(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		Can can = getNearestCan(cameraProcessor);
+		
+		if(lastState != RIGHT)
+		{
+			time = System.currentTimeMillis() - 1000;
+		}
+		
+		if(System.currentTimeMillis() > time)
+		{
+			
+			setMotorsMovement(70, -70);
+			setVassouraMovement(70);
+			time = System.currentTimeMillis() + 1500;
+		}
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN;
+			return;
 		}
 	}
 	
@@ -390,6 +431,12 @@ public class RobotBrain
 				break;
 				case SEARCH_CAN:
 					stateSearchCan(acc, comp, ult, cameraProcessor);
+				break;
+				case LEFT:
+					stateLeft(act, acc, comp, ult, cameraProcessor);
+				break;
+				case RIGHT:
+					stateRight(act, acc, comp, ult, cameraProcessor);
 				break;
 			}
 			
