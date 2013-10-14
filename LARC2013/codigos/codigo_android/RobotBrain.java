@@ -392,9 +392,13 @@ public class RobotBrain
 			
 			state = GO_TO_CAN;
 		}
+		else if (state == STOP)
+		{
+			state = GO_TO_CAN;
+		}
 		else
 		{
-			state = WAIT_START;	
+			state = STOP;	
 		}
 	}
 	
