@@ -14,7 +14,7 @@ public class RobotBrain
 	
 	private static final int LIMIT_MOTOR_MOVEMENT = 255;
 	
-	public static final int ROBOT_CENTER_OFFSET = 0;
+	public static final double ROBOT_CENTER_OFFSET = 0.05;
 	public static final int CATCHABLE_CAN_LIMIT_Y_MIN = 10;
 	public static final int CATCHABLE_CAN_LIMIT_Y_MAX = 30;
 	public static final int CATCHABLE_CAN_LIMIT_X = 40;
@@ -47,7 +47,7 @@ public class RobotBrain
 		
 	public RobotBrain(Connection arduinoConnection, Connection pcConnection, ErusView erusView)
 	{
-		state = GO_TO_CAN;
+		state = WAIT_START;
 		lastState = NO_STATE;
 		
 		time = System.currentTimeMillis();
@@ -240,7 +240,8 @@ public class RobotBrain
 			//pcPrint("getNearest -> minY: "+can.minY + " maxSand: "+cameraProcessor.getMaxSand());
 			
 			//if(can.minY < cameraProcessor.getBlueLimits() && can.minY < cameraProcessor.getTrashPosition().y)
-			if(can.minY < cameraProcessor.getMaxSand() && (can.minY < trash.position.y || trash.position.y < 0))
+			//if(can.minY < cameraProcessor.getMaxSand() && (can.minY < trash.position.y || trash.position.y < 0))
+			if(can.minY < cameraProcessor.getMaxSand())
 			{
 				if(nearestCan == null)
 				{
@@ -267,9 +268,9 @@ public class RobotBrain
 		Can can = getNearestCan(cameraProcessor);
 		
 		int width = cameraProcessor.getFrameWidth();		
-		int robotCenter = width/2 + ROBOT_CENTER_OFFSET;		
+		int robotCenter = width/2 + (int)(ROBOT_CENTER_OFFSET*width);		
 		double error = 0;
-		double k = -100.0;
+		double k = -50.0;
 	
 		if(can != null)
 		{
@@ -389,7 +390,11 @@ public class RobotBrain
 			}
 		
 			
-			state = STOP;
+			state = GO_TO_CAN;
+		}
+		else
+		{
+			state = WAIT_START;	
 		}
 	}
 	
