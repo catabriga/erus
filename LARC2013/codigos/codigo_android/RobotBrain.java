@@ -54,6 +54,8 @@ public class RobotBrain
 	
 	private ErusView erusView;
 	private Trash trash = new Trash();
+	
+	private static Random random = new Random();
 		
 	public RobotBrain(Connection arduinoConnection, Connection pcConnection, ErusView erusView)
 	{
@@ -329,8 +331,6 @@ public class RobotBrain
 	{
 		Can can = getNearestCan(cameraProcessor);
 		
-		Random random = new Random();
-		
 		if(can != null)
 		{
 			state = GO_TO_CAN;
@@ -405,7 +405,7 @@ public class RobotBrain
 	
 	private void checkObstacle(CameraProcessor camera, UltraSound ult) throws IOException
 	{
-		if(ult.getUs1() < 40 || ult.getUs3() < 40)
+		if(ult.getUs1() < 40 || ult.getUs2() < 40)
 		{
 			state = RUN_FROM_OBSTACLE_0;
 		}
@@ -434,7 +434,7 @@ public class RobotBrain
 		
 		if(System.currentTimeMillis() < time)
 		{
-			if(ult.getUs1() > 40 && ult.getUs3() > 40)
+			if(ult.getUs1() > 40 && ult.getUs2() > 40)
 			{
 				state = SEARCH_CAN;
 			}
@@ -456,7 +456,7 @@ public class RobotBrain
 		
 		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
 		{
-			if(Math.random() < 0.2)
+			if(random.nextBoolean())
 			{
 				state = RUN_FROM_OBSTACLE_2;
 			}
@@ -474,7 +474,7 @@ public class RobotBrain
 			time = System.currentTimeMillis() + 2000 + System.currentTimeMillis()%4000;
 		}
 		
-		setMotorsMovement(-70, -40);
+		setMotorsMovement(-80, 0);
 		
 		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
 		{
@@ -489,7 +489,7 @@ public class RobotBrain
 			time = System.currentTimeMillis() + 2000 + System.currentTimeMillis()%4000;
 		}
 		
-		setMotorsMovement(-40, -70);
+		setMotorsMovement(0, -80);
 		
 		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
 		{
