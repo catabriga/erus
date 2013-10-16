@@ -51,8 +51,8 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 	private int minBlue;
 	private int maxSand;
 	private int totalSandArea;
-//	private Point trashPosition;
-//	private int trashSize;
+	private Point trashPosition;
+	private int trashSize;
 	
 	public CameraProcessor(CodigoAndroidActivity activity) 
 	{
@@ -71,7 +71,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		
 		listOfCans = new ArrayList<Can>();
 		
-//		trashPosition = new Point();
+		trashPosition = new Point();
 		
 		finishSurfaceCreate = false;
 		// Nothing related to opencv can be initialized on this method, because opencv is not initialized yet
@@ -202,10 +202,10 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		}
 	}
 	
-/*	private void drawTrashLocations(Mat mat)
+	private void drawTrashLocations(Mat mat)
 	{		
 		Core.circle(mat, trashPosition, 3, BLUE);
-	}*/
+	}
 	
 	private void calculateBlueLimits(List<MatOfPoint> blueContour)
 	{	
@@ -258,6 +258,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		}	
 	}
 	
+	@SuppressWarnings("unused")
 	private void drawBlueLimits(Mat mat)
 	{
 		Core.line(mat, new Point(0, minBlue), new Point(mat.cols(), minBlue), new Scalar(255, 128, 50, 0));	
@@ -285,7 +286,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 			calculateBlueLimits(CBD.getContours()[blueColor]);
 			calculateSandLimits(CBD.getContours()[sandColor]);
 			listOfCans = getCenterObjBlack(CBD.getContours()[blackColor]);
-//			trashPosition = getTrashPosition(CBD.getContours()[redColor]);
+			trashPosition = getTrashPosition(CBD.getContours()[redColor]);
 			
 			for (int i = 0; i < CBD.getNumColors(); i++)
 			{
@@ -295,7 +296,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 			//drawBlueLimits(matRGB);
 			drawSandLimits(matRGB);
 			drawCansLocations(matRGB);
-//			drawTrashLocations(matRGB);
+			drawTrashLocations(matRGB);
 			
 			matRGB.get(0, 0, bytesRGB);	
 			frameCount++;			
@@ -347,7 +348,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		return listCenterObjBlack;		
 	}
 	
-/*	private Point getTrashPosition(List<MatOfPoint> redContour)
+	private Point getTrashPosition(List<MatOfPoint> redContour)
 	{
 		Point trashPosition = new Point(-1,-1);
 //		this.trashSize = 0;
@@ -388,9 +389,9 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		}
 		
 		return trashPosition;
-	}*/
+	}
 	
-/*	public synchronized Point getTrashPosition()
+	public synchronized Point getTrashPosition()
 	{
 		return trashPosition;
 	}
@@ -398,7 +399,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 	public synchronized int getTrashSize()
 	{
 		return trashSize;
-	}*/
+	}
 	
 	public synchronized int getMaxSand()
 	{
