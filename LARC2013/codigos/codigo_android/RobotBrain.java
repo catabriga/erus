@@ -31,6 +31,7 @@ public class RobotBrain
 	private static final int SEARCH_CAN = 2003;
 	private static final int LEFT = 2004;
 	private static final int RIGHT = 2005;
+	private static final int GO_TO_TRASH = 2006; 
 	
 	private static final int RUN_FROM_OBSTACLE_0 = 6000;
 	private static final int RUN_FROM_OBSTACLE_1 = 6001;
@@ -306,6 +307,46 @@ public class RobotBrain
 				setVassouraMovement(70);
 			}
 		}
+						
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateGoToTrash(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{			
+		if(lastState != GO_TO_TRASH)
+		{
+			time = System.currentTimeMillis() - 1000;
+		}
+		
+		Point trash = cameraProcessor.getTrashPosition();
+		
+		int width = cameraProcessor.getFrameWidth();		
+		int robotCenter = width/2 + (int)(ROBOT_CENTER_OFFSET*width);		
+		double error = 0;
+		double k = -50.0;
+	
+		if(trash != null)
+		{
+			error = k*((trash.x) - robotCenter)/(double)width;
+		}
+				
+		/*if(trash == null)
+		{
+			state = SEARCH_CAN;
+		}*/
+		//else
+		//{			
+			if(System.currentTimeMillis() > time + 100)	// This is done so that the robot is not sent a million messages a second
+			{
+				time = System.currentTimeMillis();				
+				
+				int powerLeft = (int)(70 + error);
+				int powerRight = (int)(70 - error);
+								
+				setMotorsMovement(powerLeft, powerRight);
+				setVassouraMovement(70);
+			}
+		//}
 						
 		checkObstacle(cameraProcessor, ult);
 	}

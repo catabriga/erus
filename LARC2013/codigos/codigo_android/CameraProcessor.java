@@ -51,8 +51,8 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 	private int minBlue;
 	private int maxSand;
 	private int totalSandArea;
-//	private Point trashPosition;
-//	private int trashSize;
+	private Point trashPosition;
+	private int trashSize;
 	
 	public CameraProcessor(CodigoAndroidActivity activity) 
 	{
@@ -202,10 +202,10 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		}
 	}
 	
-/*	private void drawTrashLocations(Mat mat)
+	private void drawTrashLocations(Mat mat)
 	{		
 		Core.circle(mat, trashPosition, 3, BLUE);
-	}*/
+	}
 	
 	private void calculateBlueLimits(List<MatOfPoint> blueContour)
 	{	
@@ -285,7 +285,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 			calculateBlueLimits(CBD.getContours()[blueColor]);
 			calculateSandLimits(CBD.getContours()[sandColor]);
 			listOfCans = getCenterObjBlack(CBD.getContours()[blackColor]);
-//			trashPosition = getTrashPosition(CBD.getContours()[redColor]);
+			trashPosition = getTrashPosition(CBD.getContours()[redColor]);
 			
 			for (int i = 0; i < CBD.getNumColors(); i++)
 			{
@@ -347,7 +347,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		return listCenterObjBlack;		
 	}
 	
-/*	private Point getTrashPosition(List<MatOfPoint> redContour)
+	private Point getTrashPosition(List<MatOfPoint> redContour)
 	{
 		Point trashPosition = new Point(-1,-1);
 //		this.trashSize = 0;
@@ -388,9 +388,9 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		}
 		
 		return trashPosition;
-	}*/
+	}
 	
-/*	public synchronized Point getTrashPosition()
+	public synchronized Point getTrashPosition()
 	{
 		return trashPosition;
 	}
@@ -398,7 +398,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 	public synchronized int getTrashSize()
 	{
 		return trashSize;
-	}*/
+	}
 	
 	public synchronized int getMaxSand()
 	{
