@@ -293,7 +293,7 @@ public class RobotBrain
 		}
 		else
 		{			
-			if(System.currentTimeMillis() > time + 100)	// This is done so that the robot is not sent a million messages a second
+			if(System.currentTimeMillis() > time + 25)	// This is done so that the robot is not sent a million messages a second
 			{
 				time = System.currentTimeMillis();				
 				
