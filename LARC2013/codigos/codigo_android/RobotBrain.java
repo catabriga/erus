@@ -15,12 +15,13 @@ public class RobotBrain
 	
 	private static final int LIMIT_MOTOR_MOVEMENT = 255;
 	
-	public static final double ROBOT_CENTER_OFFSET = 0.05;
+	public static final double ROBOT_CENTER_OFFSET = 0.0;
 	public static final int CATCHABLE_CAN_LIMIT_Y_MIN = 10;
 	public static final int CATCHABLE_CAN_LIMIT_Y_MAX = 30;
 	public static final int CATCHABLE_CAN_LIMIT_X = 40;
 	public static final int MIN_OBSTACLE_DISTANCE = 30;
 	
+	public static final int DEFAULT_VELOCITY = 50;
 	
 	// States
 	private static final int NO_STATE = -1;
@@ -33,7 +34,7 @@ public class RobotBrain
 	private static final int LEFT_PAUSE = 2005;
 	private static final int RIGHT = 2006;
 	private static final int RIGHT_PAUSE = 2007;
-	private static final int GO_TO_TRASH = 2010; 
+	private static final int GO_TO_TRASH = 2010;
 	
 	private static final int RUN_FROM_OBSTACLE_0 = 6000;
 	private static final int RUN_FROM_OBSTACLE_1 = 6001;
@@ -166,7 +167,7 @@ public class RobotBrain
 		
 		if(arduinoConnection != null)
 		{
-			pcPrint("Motor Movement: "+ left255 + " " + right255);
+			//pcPrint("Motor Movement: "+ left255 + " " + right255);
 			
 			arduinoConnection.sendMessage(motorData, 0, 6);
 		}
@@ -194,7 +195,7 @@ public class RobotBrain
 		
 		if(arduinoConnection != null)
 		{
-			pcPrint("Vassoura Movement: "+ speed255);
+			//pcPrint("Vassoura Movement: "+ speed255);
 			
 			arduinoConnection.sendMessage(motorData, 0, 3);
 		}
@@ -282,7 +283,7 @@ public class RobotBrain
 		int width = cameraProcessor.getFrameWidth();		
 		int robotCenter = width/2 + (int)(ROBOT_CENTER_OFFSET*width);		
 		double error = 0;
-		double k = -50.0;
+		double k = 50.0;
 	
 		if(can != null)
 		{
@@ -299,8 +300,8 @@ public class RobotBrain
 			{
 				time = System.currentTimeMillis();				
 				
-				int powerLeft = (int)(100 + error);
-				int powerRight = (int)(100 - error);
+				int powerLeft = (int)(DEFAULT_VELOCITY + error);
+				int powerRight = (int)(DEFAULT_VELOCITY - error);
 								
 				setMotorsMovement(powerLeft, powerRight);
 				setVassouraMovement(70);
@@ -337,8 +338,8 @@ public class RobotBrain
 		}
 		else
 		{
-			pcPrint("search Can");
-			if(random.nextBoolean()) // vai pra direita
+			//pcPrint("search Can");
+			if(Math.random() < 0.2)
 			{
 				state = RIGHT;
 			}
@@ -357,10 +358,10 @@ public class RobotBrain
 		
 		if(lastState != LEFT)
 		{
-			time = System.currentTimeMillis() + 250;
+			time = System.currentTimeMillis() + 750;
 		}
 		
-		setMotorsMovement(-100, 100);
+		setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
 		setVassouraMovement(70);
 		
 		if(System.currentTimeMillis() > time)
@@ -407,10 +408,10 @@ public class RobotBrain
 		
 		if(lastState != RIGHT)
 		{
-			time = System.currentTimeMillis() + 250;
+			time = System.currentTimeMillis() + 750;
 		}
 		
-		setMotorsMovement(100, -100);
+		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
 		setVassouraMovement(70);
 			
 		if(System.currentTimeMillis() > time)
@@ -501,7 +502,7 @@ public class RobotBrain
 			time = System.currentTimeMillis() + 1000;
 		}
 		
-		setMotorsMovement(-100, -100);
+		setMotorsMovement(-DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
 		
 		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
 		{
@@ -523,7 +524,7 @@ public class RobotBrain
 			time = System.currentTimeMillis() + 500 + System.currentTimeMillis()%1000;
 		}
 		
-		setMotorsMovement(-100, 100);
+		setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
 		
 		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
 		{
@@ -538,7 +539,7 @@ public class RobotBrain
 			time = System.currentTimeMillis() + 500 + System.currentTimeMillis()%1000;
 		}
 		
-		setMotorsMovement(100, -100);
+		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
 		
 		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
 		{
