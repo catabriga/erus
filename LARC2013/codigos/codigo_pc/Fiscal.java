@@ -19,8 +19,8 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private MessageAssembler msgAssembler;
 	
 
-	private final String IP_ANDROID = "192.168.0.115";
-	//private final String IP_ANDROID = "192.168.43.1";	//galaxy
+	//private final String IP_ANDROID = "192.168.0.116";
+	private final String IP_ANDROID = "192.168.43.1";	//galaxy
 	private final int PORT_ANDROID = 18550;
 	
 	/*private final byte fr1[] = {0x10,(byte) 0xFF,0};
@@ -32,10 +32,10 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private final byte esq2[] = {0x11,(byte) 0xFF,0};
 	private final byte dir1[] = {0x10,(byte) 0xFF,1};
 	private final byte dir2[] = {0x11,(byte) 0xFF,1};*/
-	private final byte forward[] = {0x11,(byte) 255, 1, 0x12, (byte) 255, 1};
-	private final byte backward[] = {0x11,(byte) 255, 0,0x12, (byte) 255, 0};
-	private final byte right[] = {0x11,(byte) 255, 0, 0x12, (byte) 255, 1};
-	private final byte left[] = {0x11,(byte) 255, 1, 0x12, (byte) 255, 0};
+	private final byte forward[] = {0x11,(byte) 255, 0, 0x12, (byte) 255, 0};
+	private final byte backward[] = {0x11,(byte) 255, 1,0x12, (byte) 255, 1};
+	private final byte right[] = {0x11,(byte) 255, 1, 0x12, (byte) 255, 0};
+	private final byte left[] = {0x11,(byte) 255, 0, 0x12, (byte) 255, 1};
 	
 	
 	private final byte stop1[] = {0x11,0,0,0x12,0,0};

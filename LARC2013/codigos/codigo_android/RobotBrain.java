@@ -131,9 +131,6 @@ public class RobotBrain
 		
 	private void setMotorsMovement(int leftMotor, int rightMotor) throws IOException
 	{	
-		leftMotor = -leftMotor;
-		rightMotor = -rightMotor;
-		
 		leftMotor = checkPowerLimits(leftMotor);
 		rightMotor = checkPowerLimits(rightMotor);
 		
