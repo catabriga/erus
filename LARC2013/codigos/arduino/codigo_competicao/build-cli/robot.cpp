@@ -14,7 +14,7 @@ int desligado = 0;
 
 Servo servoMotor;
 int motorPWMPins[3] = {PWM_R, PWM_L, PWM_VAS};
-int motorDirPins[3] = {DIR_R, DIR_L, DIR_VAS};
+int motorDirPins[5] = {DIR_R1, DIR_R2, DIR_L1, DIR_L2, DIR_VAS};
 
 //Adb Connection
 Connection * connection;
@@ -26,15 +26,28 @@ void adbEventHandler(Connection * connection, adb_eventType event, uint16_t leng
 
 void setupMotors(void)
 {
-	int i;
-	for(i=0; i<3; i++)
-	{
-		pinMode(motorPWMPins[i], OUTPUT);
-		pinMode(motorDirPins[i], OUTPUT);
-
-		analogWrite(motorPWMPins[i], 0);
-		digitalWrite(motorDirPins[i], HIGH);
-	}
+	//DIREITA
+	pinMode(motorPWMPins[0], OUTPUT);
+	pinMode(motorDirPins[0], OUTPUT);
+	pinMode(motorDirPins[1], OUTPUT);
+	analogWrite(motorPWMPins[0], 0);
+	digitalWrite(motorDirPins[0], HIGH);
+	digitalWrite(motorDirPins[1], LOW);
+	
+	//ESQUERDA
+	pinMode(motorPWMPins[1], OUTPUT);
+	pinMode(motorDirPins[2], OUTPUT);
+	pinMode(motorDirPins[3], OUTPUT);
+	analogWrite(motorPWMPins[1], 0);
+	digitalWrite(motorDirPins[2], HIGH);
+	digitalWrite(motorDirPins[3], LOW);
+	
+	//VASSOURA
+	pinMode(motorPWMPins[2], OUTPUT);
+	pinMode(motorDirPins[4], OUTPUT);
+	analogWrite(motorPWMPins[2], 0);
+	digitalWrite(motorDirPins[4], HIGH);
+	
 }
 
 void setupButton(void)
@@ -57,21 +70,38 @@ void setupVibrationMotor(void)
 
 void setMotor(int motor, uint8_t velocity, uint8_t direction)
 {
-	Serial.print("Set motor: ");
-	Serial.print(motor);
-	Serial.print(" ");
-	Serial.print(velocity);
-	Serial.print(" ");
-	Serial.print(direction);
-	Serial.print("\n\r");
-
-	if(direction)
+	if(motor == 0) // direita
 	{
-		digitalWrite(motorDirPins[motor], HIGH);
-	}
-	else
-	{
-		digitalWrite(motorDirPins[motor], LOW);
+		if(direction) //para o motorshield novo
+		{
+			digitalWrite(motorDirPins[0], HIGH);
+			digitalWrite(motorDirPins[1], LOW);
+		}
+		else
+		{
+			digitalWrite(motorDirPins[0], LOW);
+			digitalWrite(motorDirPins[1], HIGH);
+		}
+	} else if (motor == 1){ // esquerda
+		if(direction) //para o motorshield novo
+		{
+			digitalWrite(motorDirPins[2], LOW);
+			digitalWrite(motorDirPins[3], HIGH);
+		}
+		else
+		{
+			digitalWrite(motorDirPins[2], HIGH);
+			digitalWrite(motorDirPins[3], LOW);
+		}
+	} else {
+		if(direction)
+		{
+			digitalWrite(motorDirPins[4], HIGH);
+		}
+		else // vassoura
+		{
+			digitalWrite(motorDirPins[4], LOW);
+		}
 	}	
 
 	analogWrite(motorPWMPins[motor], velocity);

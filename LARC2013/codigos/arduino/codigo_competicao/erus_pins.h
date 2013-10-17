@@ -2,9 +2,11 @@
 #define ERUS_PINS_H
 
 //Pinos dos Motores para Movimentação
-#define DIR_R 46 //Direita
+#define DIR_R1 35 //Direita
+#define DIR_R2 37
 #define PWM_R 9 
-#define DIR_L 48 //Esquerda
+#define DIR_L1 31 //Esquerda
+#define DIR_L2 33
 #define PWM_L 10
 
 //Pinos do Motor da Vassoura
