@@ -21,7 +21,7 @@ public class RobotBrain
 	public static final int CATCHABLE_CAN_LIMIT_X = 40;
 	public static final int MIN_OBSTACLE_DISTANCE = 30;
 	
-	public static final int DEFAULT_VELOCITY = 50;
+	public static final int DEFAULT_VELOCITY = 80;
 	
 	// States
 	private static final int NO_STATE = -1;
@@ -688,7 +688,7 @@ public class RobotBrain
 				setVassouraMovement(70);
 			}
 			
-			if(ult.getUs3() < 15)
+			if(ult.getInfra() < 300)
 			{
 				state = GO_TO_TRASH_DEBOUNCE_ULTRASOUND;
 //				setMotorsMovement(0, 0);
@@ -714,7 +714,7 @@ public class RobotBrain
 		
 		if(System.currentTimeMillis() < time)
 		{			
-			if(ult.getUs3() >= 15)
+			if(ult.getInfra() > 300)
 			{
 				state = GO_TO_TRASH;
 			}	
@@ -847,15 +847,14 @@ public class RobotBrain
 			}
 		
 			
-			//state = GO_TO_CAN;
-			state = GO_TO_TRASH;
+			state = GO_TO_CAN;
 			
 			lastTrashTime = System.currentTimeMillis();
 		}
 		else if (state == STOP)
 		{
-			//state = GO_TO_CAN;
-			state = GO_TO_TRASH;
+			state = GO_TO_CAN;
+			
 		}
 		else
 		{
