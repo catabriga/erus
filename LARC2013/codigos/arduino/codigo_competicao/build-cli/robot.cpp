@@ -50,6 +50,11 @@ void setupMotors(void)
 	
 }
 
+void setupInfraRed(void)
+{
+	pinMode(INFRARED, INPUT);
+}
+
 void setupButton(void)
 {
 	pinMode(START_BUTTON, INPUT);
@@ -117,6 +122,7 @@ void setup()
 	setupVibrationMotor();
 	setupUltrasound();
 	setupButton();
+	setupInfraRed();
 	
 	messageAssembler = createMessageAssembler();
  

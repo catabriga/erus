@@ -22,6 +22,9 @@
 #define DONT_USE_PIN_7_FOR_PWM 7
 #define DONT_USE_PIN_8_FOR_PWM 8
 
+//INFRARED
+#define INFRARED A0
+
 //Ultrasons
 #define US_TRIG_RIGHT 45
 #define US_ECHO_RIGHT 43
