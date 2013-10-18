@@ -35,8 +35,13 @@ public class RobotBrain
 	private static final int RIGHT = 2006;
 	private static final int RIGHT_PAUSE = 2007;
 	
-	private static final int GO_TO_TRASH = 2010;
-	private static final int GO_TO_TRASH_DEBOUNCE_ULTRASOUND = 2011;
+	private static final int GO_TO_TRASH = 3010;
+	private static final int GO_TO_TRASH_DEBOUNCE_ULTRASOUND = 3011;
+	private static final int SEARCH_TRASH = 3012;
+	private static final int SEARCH_TRASH_FORWARD = 3013;
+	private static final int SEARCH_TRASH_LEFT = 3014;
+	private static final int SEARCH_TRASH_RIGHT = 3015;
+	
 	
 	private static final int RUN_FROM_OBSTACLE_0 = 6000;
 	private static final int RUN_FROM_OBSTACLE_1 = 6001;
@@ -50,6 +55,7 @@ public class RobotBrain
 	private int lastState;
 	
 	private long time;
+	private long lastTrashTime;
 	
 	private int motorLeft;
 	private int motorRight;
@@ -324,6 +330,14 @@ public class RobotBrain
 		this.setBuzzer(0);		
 	}
 	
+	private void checkTrashTime()
+	{
+		if(System.currentTimeMillis() - lastTrashTime > 3 * 60 * 1000)
+		{
+			state = SEARCH_TRASH;
+		}
+	}
+	
 	private void stateSearchCan(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
 		Can can = getNearestCan(cameraProcessor);
@@ -345,6 +359,7 @@ public class RobotBrain
 			}
 		}
 		
+		checkTrashTime();
 		checkObstacle(cameraProcessor, ult);
 	}
 	
@@ -370,6 +385,7 @@ public class RobotBrain
 			state = GO_TO_CAN;
 		}
 		
+		checkTrashTime();
 		checkObstacle(cameraProcessor, ult);
 	}
 	
@@ -395,6 +411,7 @@ public class RobotBrain
 			state = GO_TO_CAN;
 		}
 		
+		checkTrashTime();
 		checkObstacle(cameraProcessor, ult);
 	}
 	
@@ -421,6 +438,7 @@ public class RobotBrain
 			return;
 		}
 		
+		checkTrashTime();
 		checkObstacle(cameraProcessor, ult);
 	}
 	
@@ -446,6 +464,7 @@ public class RobotBrain
 			state = GO_TO_CAN;
 		}
 		
+		checkTrashTime();
 		checkObstacle(cameraProcessor, ult);
 	}
 	
@@ -550,6 +569,96 @@ public class RobotBrain
 		checkObstacle(cameraProcessor, ult);
 	}
 	
+	private void stateSearchTrash(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{			
+		if(Math.random() < 0.4)
+		{
+			state = SEARCH_TRASH_FORWARD;
+		}
+		else if(Math.random() < 0.2)
+		{
+			state = SEARCH_TRASH_RIGHT;
+		}
+		else
+		{
+			state = SEARCH_TRASH_LEFT;
+		}
+		
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateSearchTrashLeft(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{			
+		if(lastState != SEARCH_TRASH_LEFT)
+		{
+			time = System.currentTimeMillis() + 500 + System.currentTimeMillis()%1000;
+		}
+		
+		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = SEARCH_TRASH_FORWARD;
+		}
+		
+		Point trashPosition = cameraProcessor.getTrashPosition();
+		
+		if(trashPosition.x > 0)
+		{
+			state = GO_TO_TRASH;
+		}
+		
+		checkObstacle(cameraProcessor, ult);
+	}
+
+	private void stateSearchTrashRight(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{			
+		if(lastState != SEARCH_TRASH_RIGHT)
+		{
+			time = System.currentTimeMillis() + 500 + System.currentTimeMillis()%1000;
+		}
+		
+		setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = SEARCH_TRASH_FORWARD;
+		}
+		
+		Point trashPosition = cameraProcessor.getTrashPosition();
+		
+		if(trashPosition.x > 0)
+		{
+			state = GO_TO_TRASH;
+		}
+		
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateSearchTrashForward(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{			
+		if(lastState != SEARCH_TRASH_FORWARD)
+		{
+			time = System.currentTimeMillis() + 1000 + System.currentTimeMillis()%2000;
+		}
+		
+		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = SEARCH_TRASH;
+		}
+		
+		Point trashPosition = cameraProcessor.getTrashPosition();
+		
+		if(trashPosition.x > 0)
+		{
+			state = GO_TO_TRASH;
+		}
+		
+		checkObstacle(cameraProcessor, ult);
+	}
+	
 	private void stateGoToTrash(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{			
 		if(lastState != GO_TO_TRASH)
@@ -563,7 +672,7 @@ public class RobotBrain
 		int robotCenter = width/2 + (int)(ROBOT_CENTER_OFFSET*width);		
 		double error = 0;
 		double k = 50.0;
-	
+		
 		if(trashPosition.x > 0)
 		{
 			error = k*((trashPosition.x) - robotCenter)/(double)width;
@@ -587,11 +696,11 @@ public class RobotBrain
 		}
 		else
 		{
-			//state = SEARCH_TRASH;
-			setMotorsMovement(0, 0);
+			state = SEARCH_TRASH;
+			//setMotorsMovement(0, 0);
 		}
 							
-		//checkObstacle(cameraProcessor, ult);
+		checkObstacle(cameraProcessor, ult);
 	}
 	
 	private void stateGoToTrashDebounceUltrasound(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
@@ -626,9 +735,10 @@ public class RobotBrain
 		setMotorsMovement(0, 0);
 		setMotorDoor(-50);
 		
-		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
+		if(System.currentTimeMillis() > time)
 		{
-			state = STOP;
+			state = SEARCH_CAN;
+			lastTrashTime = System.currentTimeMillis();
 		}
 	}
 
@@ -679,6 +789,18 @@ public class RobotBrain
 				case RUN_FROM_OBSTACLE_4:
 					runFromObstacle4(act, acc, comp, ult, cameraProcessor);
 				break;
+				case SEARCH_TRASH:
+					stateSearchTrash(act, acc, comp, ult, cameraProcessor);
+				break;
+				case SEARCH_TRASH_LEFT:
+					stateSearchTrashLeft(act, acc, comp, ult, cameraProcessor);
+				break;
+				case SEARCH_TRASH_RIGHT:
+					stateSearchTrashRight(act, acc, comp, ult, cameraProcessor);
+				break;
+				case SEARCH_TRASH_FORWARD:
+					stateSearchTrashForward(act, acc, comp, ult, cameraProcessor);
+				break;
 				case GO_TO_TRASH:
 					stateGoToTrash(act, acc, comp, ult, cameraProcessor);
 				break;
@@ -727,6 +849,8 @@ public class RobotBrain
 			
 			//state = GO_TO_CAN;
 			state = GO_TO_TRASH;
+			
+			lastTrashTime = System.currentTimeMillis();
 		}
 		else if (state == STOP)
 		{
