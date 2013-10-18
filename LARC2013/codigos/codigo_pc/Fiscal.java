@@ -719,7 +719,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 				}
 				
 			}break;
-			case 70: // 'f' 
+			case 70: // 'f'
 			{
 				if (closedDeposit)
 				{
