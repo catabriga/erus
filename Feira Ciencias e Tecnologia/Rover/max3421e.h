@@ -30,7 +30,6 @@ limitations under the License.#include <string.h>
 #define __max3421e_h__
 
 #include "max3421e_constants.h"
-#include "pins_arduino.h"
 
 /**
  * Max3421e registers in host mode.
@@ -63,6 +62,7 @@ typedef enum
 #define PIN_MAX_INT 9
 #define PIN_MAX_GPX 8
 #define PIN_MAX_RESET 7
+
 
 #define MAX_SS(x) digitalWrite(SS, x)
 #define MAX_INT() digitalRead(PIN_MAX_INT)

@@ -14,7 +14,7 @@
 	limitations under the License.#include <string.h>
 */
 
-#include "Arduino.h"
+#include "wiring.h"
 #include "usb.h"
 #include "ch9.h"
 #include "max3421e.h"
