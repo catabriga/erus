@@ -8,6 +8,7 @@ public class UltraSound
 	private int us4 = 0;
 	private int us5 = 0;
 	private int us6 = 0;
+	private int infra = 0;
 	
 	public UltraSound()
 	{		
@@ -22,6 +23,8 @@ public class UltraSound
 		us4 = (int)(msg[4] & 0xFF);
 		us5 = (int)(msg[5] & 0xFF);
 		us6 = (int)(msg[6] & 0xFF);
+		infra = (int) ((msg[6] & 0xFF) * 4);
+		
 	}
 
 	public int getUs1()
@@ -52,5 +55,10 @@ public class UltraSound
 	public int getUs6()
 	{
 		return this.us6;
+	}
+	
+	public int getInfra()
+	{
+		return this.infra;
 	}
 }
