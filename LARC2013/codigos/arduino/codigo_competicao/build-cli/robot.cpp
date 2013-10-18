@@ -50,6 +50,11 @@ void setupMotors(void)
 	
 }
 
+void setupInfraRed(void)
+{
+	pinMode(INFRARED, INPUT);
+}
+
 void setupButton(void)
 {
 	pinMode(START_BUTTON, INPUT);
@@ -117,6 +122,7 @@ void setup()
 	setupVibrationMotor();
 	setupUltrasound();
 	setupButton();
+	setupInfraRed();
 	
 	messageAssembler = createMessageAssembler();
  
@@ -190,7 +196,8 @@ void adbEventHandler(Connection* connection, adb_eventType event, uint16_t lengt
 
 void sendUltrasoundMessage(unsigned int* values)
 {
-	uint8_t data[7];
+	uint8_t data[8];
+	int infrared;
 	
 	data[0] = 0x31;
 	if(values[0] > 255)
@@ -229,8 +236,10 @@ void sendUltrasoundMessage(unsigned int* values)
 	} else {
 		data[6] = (uint8_t) values[5];
 	}
+	infrared = analogRead(INFRARED);
+	data[7] = (uint8_t) (infrared>>2);
 	
-	connection->write(7, data);
+	connection->write(8, data);
 }
 
 void handleUltrasound(void)

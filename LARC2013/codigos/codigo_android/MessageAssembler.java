@@ -53,7 +53,7 @@ public class MessageAssembler
 		msgSizeTable[Protocol.SERVO] = 2;
 		msgSizeTable[Protocol.MOTOR_VIBRADOR] = 2;
 		
-		msgSizeTable[Protocol.ULTRASOUND] = 7;		
+		msgSizeTable[Protocol.ULTRASOUND] = 8;		
 		msgSizeTable[Protocol.BUTTON_START] = 2;
 		msgSizeTable[Protocol.REQUEST_IMAGE] = 1;
 		msgSizeTable[Protocol.IMG_CALIB_DISK] = 49;
@@ -253,10 +253,10 @@ public class MessageAssembler
 		
 	}
 	
-	public void sendUltraSoundMessage(byte data1, byte data2, byte data3, byte data4, byte data5, byte data6) throws IOException
+	public void sendUltraSoundMessage(byte data1, byte data2, byte data3, byte data4, byte data5, byte data6, byte data7) throws IOException
 	{
 		byte[] usCode = {0x31};	
-		byte[] usValue = {data1, data2, data3, data4, data5, data6};
+		byte[] usValue = {data1, data2, data3, data4, data5, data6, data7};
 		connection.sendMessage(usCode, 0, usCode.length);
 		connection.sendMessage(usValue, 0, 1);
 		connection.sendMessage(usValue, 1, 1);
@@ -264,6 +264,7 @@ public class MessageAssembler
 		connection.sendMessage(usValue, 3, 1);
 		connection.sendMessage(usValue, 4, 1);
 		connection.sendMessage(usValue, 5, 1);
+		connection.sendMessage(usValue, 6, 1);
 		
 		//Log.i(TAG, "data.length = "+data.length);
 	}

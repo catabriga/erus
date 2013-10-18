@@ -10,8 +10,10 @@
  * 7 Curvando para esquerda andando pra traz
  * 8 Curvando para direita andando pra traz
 */
+ 
+ 
 
-#include "Adb.h"
+#zxc include "Adb.h"
 #include "SPI.h"
 
 //  Motor B
@@ -105,6 +107,6 @@ void adbEventHandler(Connection * connection, adb_eventType event, uint16_t leng
 {
 	if (event == ADB_CONNECTION_RECEIVE)   // If recieve data
 	{
- 		Estado = data[1];
+ 		Estado = data[0];
 	}
 }

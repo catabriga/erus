@@ -65,7 +65,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private float[] Accelerometer = {0, 0, 0};
 	private float[] Compass = {0, 0, 0};
 	private int[] Encoder = {0, 0};
-	private int[] UltraSound = {0, 0, 0, 0, 0, 0};
+	private int[] UltraSound = {0, 0, 0, 0, 0, 0, 0};
 	
 	private boolean lockRequestImage = false;
 	private boolean writeDisk = false;
@@ -205,7 +205,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			g.drawString("Accelerometer: "+Accelerometer[0]+" ,"+Accelerometer[1]+" ,"+Accelerometer[2], 20, 240);
 			g.drawString("Compass: "+(57.3 * Math.atan2(Compass[1], Compass[2])), 20, 260);
 			g.drawString("Encoder: "+Encoder[0]+" ,"+Encoder[1], 20, 280);
-			g.drawString("Ultrassound: "+UltraSound[0]+" ,"+UltraSound[1]+" ,"+UltraSound[2]+" ,"+UltraSound[3]+" ,"+UltraSound[4]+" ,"+UltraSound[5], 20, 300);
+			g.drawString("Ultrassound: "+UltraSound[0]+" ,"+UltraSound[1]+" ,"+UltraSound[2]+" ,"+UltraSound[3]+" ,"+UltraSound[4]+" ,"+UltraSound[5]+" ,"+UltraSound[6], 20, 300);
 			
 			g.drawString("Cor 1:", 20, 340);
 			g.drawString("Cor 2:", 20, 360);
@@ -223,7 +223,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 			g.drawString("Accelerometer: "+Accelerometer[0]+" ,"+Accelerometer[1]+" ,"+Accelerometer[2], 20, 240);
 			g.drawString("Compass: "+Compass[0]+" ,"+Compass[1]+" ,"+Compass[2]+" ,"+(57.3 * Math.atan2(Compass[1], Compass[2])), 20, 260);
 			g.drawString("Encoder: "+Encoder[0]+" ,"+Encoder[1], 20, 280);
-			g.drawString("Ultrassound: "+UltraSound[0]+" ,"+UltraSound[1]+" ,"+UltraSound[2]+" ,"+UltraSound[3]+" ,"+UltraSound[4]+" ,"+UltraSound[5], 20, 300);
+			g.drawString("Ultrassound: "+UltraSound[0]+" ,"+UltraSound[1]+" ,"+UltraSound[2]+" ,"+UltraSound[3]+" ,"+UltraSound[4]+" ,"+UltraSound[5]+" ,"+UltraSound[6], 20, 300);
 			ByteBuffer bb = ByteBuffer.allocate(4);
 			bb.put(imgCalibration, 9, 4);
 			bb.rewind();
@@ -481,7 +481,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 		System.out.println(usMsg.length);
 		ByteBuffer bb = ByteBuffer.allocate(24);
 		
-		bb.put(usMsg, 1, 6);
+		bb.put(usMsg, 1, 7);
 		bb.rewind();
 		int data1 = bb.get()&0xFF;
 		int data2 = bb.get()&0xFF;
@@ -489,9 +489,10 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 		int data4 = bb.get()&0xFF;
 		int data5 = bb.get()&0xFF;
 		int data6 = bb.get()&0xFF;
-		System.out.println(data1 + ", " + data2 + ", " + data3 + ", " + data4 + ", " + data5 + ", " + data6);
+		int data7 = bb.get()&0xFF;
+		System.out.println(data1 + ", " + data2 + ", " + data3 + ", " + data4 + ", " + data5 + ", " + data6 + ", " + data7);
 		
-		int comp[] = {data1, data2, data3, data4, data5, data6};
+		int comp[] = {data1, data2, data3, data4, data5, data6, data7};
 		//System.out.println(dataRight+" "+dataLeft);
 		return comp;
 	}

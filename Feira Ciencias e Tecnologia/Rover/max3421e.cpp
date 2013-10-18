@@ -29,8 +29,8 @@ limitations under the License.#include <string.h>
  * http://www.circuitsathome.com/
  */
 
-#include "SPI.h"
-#include "Arduino.h"
+#include "../SPI/SPI.h"
+#include "wiring.h"
 #include "max3421e.h"
 #include "HardwareSerial.h"
 
