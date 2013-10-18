@@ -455,7 +455,7 @@ public class RobotBrain
 	
 	private void checkObstacle(CameraProcessor camera, UltraSound ult) throws IOException
 	{
-		if(ult.getUs1() < 40 || ult.getUs2() < 40)
+		if(ult.getUs1() < 40 || ult.getUs2() < 40 || ult.getUs4() < 40)
 		{
 			state = RUN_FROM_OBSTACLE_0;
 		}
@@ -484,7 +484,7 @@ public class RobotBrain
 		
 		if(System.currentTimeMillis() < time)
 		{
-			if(ult.getUs1() > 40 && ult.getUs2() > 40)
+			if(ult.getUs1() > 40 && ult.getUs2() > 40 && ult.getUs4() > 40)
 			{
 				state = SEARCH_CAN;
 			}
@@ -504,7 +504,7 @@ public class RobotBrain
 		
 		setMotorsMovement(-DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
 		
-		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
+		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
 		{
 			if(random.nextBoolean())
 			{
@@ -526,7 +526,7 @@ public class RobotBrain
 		
 		setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
 		
-		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
+		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
 		{
 			state = RUN_FROM_OBSTACLE_4;
 		}
@@ -541,7 +541,7 @@ public class RobotBrain
 		
 		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
 		
-		if(System.currentTimeMillis() > time) // || ult.getUs4() < 30) NAO TEMOS ULTRASSOM TRASEIRO
+		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
 		{
 			state = RUN_FROM_OBSTACLE_4;
 		}
