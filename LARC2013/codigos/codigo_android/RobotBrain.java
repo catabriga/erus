@@ -41,6 +41,8 @@ public class RobotBrain
 	private static final int SEARCH_TRASH_FORWARD = 3013;
 	private static final int SEARCH_TRASH_LEFT = 3014;
 	private static final int SEARCH_TRASH_RIGHT = 3015;
+	private static final int BACK_FROM_TRASH = 3016;
+	private static final int CLOSE_DEPOSIT = 3017;
 	
 	
 	private static final int RUN_FROM_OBSTACLE_0 = 6000;
@@ -332,7 +334,7 @@ public class RobotBrain
 	
 	private void checkTrashTime()
 	{
-		if(System.currentTimeMillis() - lastTrashTime > 3 * 60 * 1000)
+		if(System.currentTimeMillis() - lastTrashTime > 1 * 60 * 1000)
 		{
 			state = SEARCH_TRASH;
 		}
@@ -738,6 +740,39 @@ public class RobotBrain
 		if(System.currentTimeMillis() > time)
 		{
 			state = SEARCH_CAN;
+			lastTrashTime = System.currentTimeMillis();
+		}
+	}
+	
+	private void stateBackupFromTrash(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{		
+		if(lastState != BACK_FROM_TRASH)
+		{
+			time = System.currentTimeMillis() + 1000;
+		}
+		
+		setMotorsMovement(-DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+		setMotorDoor(-50);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = CLOSE_DEPOSIT;
+		}
+	}
+	
+	private void stateCloseDeposit(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{		
+		if(lastState != CLOSE_DEPOSIT)
+		{
+			time = System.currentTimeMillis() + 500;
+		}
+		
+		setMotorsMovement(0, 0);
+		setMotorDoor(0);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = GO_TO_CAN;
 			lastTrashTime = System.currentTimeMillis();
 		}
 	}
