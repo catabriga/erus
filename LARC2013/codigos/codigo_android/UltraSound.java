@@ -23,7 +23,8 @@ public class UltraSound
 		us4 = (int)(msg[4] & 0xFF);
 		us5 = (int)(msg[5] & 0xFF);
 		us6 = (int)(msg[6] & 0xFF);
-		infra = (int) ((msg[6] & 0xFF) * 4);
+		infra = (int)(msg[7] & 0xFF);
+		
 		
 	}
 
@@ -59,6 +60,6 @@ public class UltraSound
 	
 	public int getInfra()
 	{
-		return this.infra;
+		return this.infra * 4;
 	}
 }

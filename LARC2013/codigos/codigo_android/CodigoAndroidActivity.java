@@ -355,6 +355,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
     
     private void handleArduinoMessage(byte[] msg)
     {
+    	
     	//pcPrint(msg[0]+0+"");
     	
     	switch(msg[0])

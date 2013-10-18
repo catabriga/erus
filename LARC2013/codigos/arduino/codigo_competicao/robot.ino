@@ -236,7 +236,9 @@ void sendUltrasoundMessage(unsigned int* values)
 		data[6] = (uint8_t) values[5];
 	}
 	infrared = analogRead(INFRARED);
-	data[7] = (uint8_t) (infrared>>2);
+	infrared = infrared>>2;
+	data[7] = (uint8_t) (infrared);
+	//Serial.println(data[7]);
 	
 	connection->write(8, data);
 }

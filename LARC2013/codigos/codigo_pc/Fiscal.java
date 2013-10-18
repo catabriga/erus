@@ -489,7 +489,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 		int data4 = bb.get()&0xFF;
 		int data5 = bb.get()&0xFF;
 		int data6 = bb.get()&0xFF;
-		int data7 = bb.get()&0xFF;
+		int data7 = (bb.get()&0xFF)*4;
 		System.out.println(data1 + ", " + data2 + ", " + data3 + ", " + data4 + ", " + data5 + ", " + data6 + ", " + data7);
 		
 		int comp[] = {data1, data2, data3, data4, data5, data6, data7};
