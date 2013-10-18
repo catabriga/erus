@@ -21,7 +21,7 @@ void initMsgSizeTable(int *msgSizeTable)
 	msgSizeTable[0x11] = 3;	// MOTOR_D
 	msgSizeTable[0x12] = 3;	// MOTOR_E
 	msgSizeTable[0x13] = 3;	// MOTOR_VAS
-	msgSizeTable[0x14] = 3;	// SERVO
+	msgSizeTable[0x14] = 2;	// SERVO
 	msgSizeTable[0x15] = 5;	// VIBRADOR	
 	msgSizeTable[0x31] = 3; // ULTRASOUND
 	msgSizeTable[0x32] = 3; // BUTTON
