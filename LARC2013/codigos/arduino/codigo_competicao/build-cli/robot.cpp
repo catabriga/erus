@@ -190,7 +190,7 @@ void adbEventHandler(Connection* connection, adb_eventType event, uint16_t lengt
 
 void sendUltrasoundMessage(unsigned int* values)
 {
-	uint8_t data[4];
+	uint8_t data[7];
 	
 	data[0] = 0x31;
 	if(values[0] > 255)
@@ -211,8 +211,26 @@ void sendUltrasoundMessage(unsigned int* values)
 	} else {
 		data[3] = (uint8_t) values[2];
 	}
+	if(values[3] > 255)
+	{
+		data[4] = (uint8_t) 255; //limite da distancia
+	} else {
+		data[4] = (uint8_t) values[3];
+	}
+	if(values[4] > 255)
+	{
+		data[5] = (uint8_t) 255; //limite da distancia
+	} else {
+		data[5] = (uint8_t) values[4];
+	}
+	if(values[5] > 255)
+	{
+		data[6] = (uint8_t) 255; //limite da distancia
+	} else {
+		data[6] = (uint8_t) values[5];
+	}
 	
-	connection->write(4, data);
+	connection->write(7, data);
 }
 
 void handleUltrasound(void)
