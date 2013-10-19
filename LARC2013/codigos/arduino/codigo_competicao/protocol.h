@@ -5,5 +5,6 @@
 #define MOTOR_E 0x12
 #define MOTOR_VAS 0x13
 #define SERVO 0x14
+#define VIBRATOR 0X15
 
 #endif

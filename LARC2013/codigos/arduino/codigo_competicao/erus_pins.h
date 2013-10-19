@@ -13,7 +13,9 @@
 #define DIR_VAS 34
 #define PWM_VAS 11
 
-#define VIB_PIN 23 //VIBRADOR
+#define VIB_PIN 36 //VIBRADOR
+#define VIB_PWM 12
+
 #define SERVO_PIN 2
 #define START_BUTTON 24
 

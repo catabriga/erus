@@ -63,6 +63,7 @@ public class RobotBrain
 	private int motorRight;
 	private int motorVassoura;
 	private int motorDoor;
+	private int vibratorMotor;
 	private int buzzer;
 	
 	private Connection arduinoConnection;
@@ -196,6 +197,32 @@ public class RobotBrain
 		int speed255 = convert100To255(speed, LIMIT_MOTOR_MOVEMENT);
 					
 		byte motorData[] = {0x13, (byte)speed255, Direction};
+		
+		if(arduinoConnection != null)
+		{
+			//pcPrint("Vassoura Movement: "+ speed255);
+			
+			arduinoConnection.sendMessage(motorData, 0, 3);
+		}
+	}
+	
+	private void setVibrator(int speed) throws IOException
+	{	
+		if(speed < 0)
+		{
+			speed = -speed;
+		}
+		
+		if(vibratorMotor == speed)
+		{
+			return;
+		}		
+		
+		this.vibratorMotor = speed;
+		
+		int speed255 = convert100To255(speed, LIMIT_MOTOR_MOVEMENT);
+					
+		byte motorData[] = {0x15, (byte)speed255};
 		
 		if(arduinoConnection != null)
 		{

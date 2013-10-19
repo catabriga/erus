@@ -69,8 +69,10 @@ void setupServoMotor(void)
 
 void setupVibrationMotor(void)
 {       
-	pinMode(VIB_PIN, OUTPUT);	
-	digitalWrite(VIB_PIN, LOW);
+	pinMode(VIB_PIN, OUTPUT);
+	pinMode(VIB_PWM, OUTPUT);
+	digitalWrite(VIB_PIN, HIGH);
+	analogWrite(VIB_PWM, 0);
 }
 
 void setMotor(int motor, uint8_t velocity, uint8_t direction)
@@ -135,6 +137,11 @@ void setServoMotor(uint8_t velocity)
 	servoMotor.write(velocity);		
 }
 
+void setVibratorMotor(int velocity)
+{
+	analogWrite(VIB_PWM, velocity);
+}
+
 void processMessages()
 {
 	uint8_t* msg = getMessage(messageAssembler);
@@ -165,6 +172,11 @@ void processMessages()
 			{
 				setServoMotor(msg[1]);
 			}break;	
+			
+			case VIBRATOR:
+			{
+				setVibratorMotor(msg[1]);
+			}
 																		
 		}
 		removeMessage(messageAssembler);
@@ -303,7 +315,6 @@ void handleButton(void)
 void loop()
 {
 	ADB::poll();
-	
 	processMessages();
 	handleUltrasound();
 	handleButton();
