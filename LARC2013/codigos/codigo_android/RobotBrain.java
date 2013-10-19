@@ -34,6 +34,7 @@ public class RobotBrain
 	private static final int LEFT_PAUSE = 2005;
 	private static final int RIGHT = 2006;
 	private static final int RIGHT_PAUSE = 2007;
+	private static final int FORWARD = 2008;
 	
 	private static final int GO_TO_TRASH = 3010;
 	private static final int GO_TO_TRASH_DEBOUNCE_ULTRASOUND = 3011;
@@ -41,10 +42,7 @@ public class RobotBrain
 	private static final int SEARCH_TRASH_FORWARD = 3013;
 	private static final int SEARCH_TRASH_LEFT = 3014;
 	private static final int SEARCH_TRASH_RIGHT = 3015;
-	private static final int BACK_FROM_TRASH = 3016;
-	private static final int CLOSE_DEPOSIT = 3017;
-	
-	
+		
 	private static final int RUN_FROM_OBSTACLE_0 = 6000;
 	private static final int RUN_FROM_OBSTACLE_1 = 6001;
 	private static final int RUN_FROM_OBSTACLE_2 = 6002;
@@ -52,6 +50,8 @@ public class RobotBrain
 	private static final int RUN_FROM_OBSTACLE_4 = 6004;
 	
 	private static final int OPEN_DEPOSIT = 8001;
+	private static final int BACKUP_FROM_TRASH = 8002;
+	private static final int CLOSE_DEPOSIT = 8003;
 	
 	private int state;
 	private int lastState;
@@ -200,7 +200,7 @@ public class RobotBrain
 		
 		if(arduinoConnection != null)
 		{
-			//pcPrint("Vassoura Movement: "+ speed255);
+			pcPrint("Vassoura Movement: "+ speed255);
 			
 			arduinoConnection.sendMessage(motorData, 0, 3);
 		}
@@ -222,13 +222,13 @@ public class RobotBrain
 		
 		int speed255 = convert100To255(speed, LIMIT_MOTOR_MOVEMENT);
 					
-		byte motorData[] = {0x15, (byte)speed255};
+		byte motorData[] = {Protocol.MOTOR_VIBRATOR, (byte)speed255};
 		
 		if(arduinoConnection != null)
 		{
-			//pcPrint("Vassoura Movement: "+ speed255);
+			pcPrint("Vibrator speed: "+ speed255);
 			
-			arduinoConnection.sendMessage(motorData, 0, 3);
+			arduinoConnection.sendMessage(motorData, 0, 2);
 		}
 	}
 	
@@ -323,7 +323,7 @@ public class RobotBrain
 				
 		if(can == null)
 		{
-			state = SEARCH_CAN;
+			state = FORWARD;
 		}
 		else
 		{			
@@ -356,6 +356,7 @@ public class RobotBrain
 		this.setMotorsMovement(0, 0);
 		this.setVassouraMovement(0);
 		this.setMotorDoor(0);
+		this.setVibrator(0);
 		this.setBuzzer(0);		
 	}
 	
@@ -407,6 +408,32 @@ public class RobotBrain
 		if(System.currentTimeMillis() > time)
 		{
 			state = LEFT_PAUSE;			
+		}
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN;
+		}
+		
+		checkTrashTime();
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateForward(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		Can can = getNearestCan(cameraProcessor);
+		
+		if(lastState != FORWARD)
+		{
+			time = System.currentTimeMillis() + 500;
+		}
+		
+		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		setVassouraMovement(70);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = SEARCH_CAN;			
 		}
 		
 		if(can != null)
@@ -758,28 +785,31 @@ public class RobotBrain
 	{		
 		if(lastState != OPEN_DEPOSIT)
 		{
-			time = System.currentTimeMillis() + 2000;
+			time = System.currentTimeMillis() + 5000;
 		}
 		
 		setMotorsMovement(0, 0);
+		setVassouraMovement(70);
 		setMotorDoor(-50);
+		setVibrator(60);
 		
 		if(System.currentTimeMillis() > time)
 		{
-			state = SEARCH_CAN;
+			state = BACKUP_FROM_TRASH;
 			lastTrashTime = System.currentTimeMillis();
 		}
 	}
 	
 	private void stateBackupFromTrash(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{		
-		if(lastState != BACK_FROM_TRASH)
+		if(lastState != BACKUP_FROM_TRASH)
 		{
-			time = System.currentTimeMillis() + 1000;
+			time = System.currentTimeMillis() + 2000;
 		}
 		
 		setMotorsMovement(-DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
 		setMotorDoor(-50);
+		setVibrator(0);
 		
 		if(System.currentTimeMillis() > time)
 		{
@@ -791,7 +821,7 @@ public class RobotBrain
 	{		
 		if(lastState != CLOSE_DEPOSIT)
 		{
-			time = System.currentTimeMillis() + 500;
+			time = System.currentTimeMillis() + 250;
 		}
 		
 		setMotorsMovement(0, 0);
@@ -799,7 +829,7 @@ public class RobotBrain
 		
 		if(System.currentTimeMillis() > time)
 		{
-			state = GO_TO_CAN;
+			state = SEARCH_CAN;
 			lastTrashTime = System.currentTimeMillis();
 		}
 	}
@@ -836,6 +866,8 @@ public class RobotBrain
 				case RIGHT_PAUSE:
 					stateRightPause(act, acc, comp, ult, cameraProcessor);
 				break;
+				case FORWARD:
+					stateForward(act, acc, comp, ult, cameraProcessor);
 				case RUN_FROM_OBSTACLE_0:
 					runFromObstacle0(act, acc, comp, ult, cameraProcessor);
 				break;
@@ -871,6 +903,12 @@ public class RobotBrain
 				break;
 				case OPEN_DEPOSIT:
 					stateOpenDeposit(act, acc, comp, ult, cameraProcessor);
+				break;
+				case BACKUP_FROM_TRASH:
+					stateBackupFromTrash(act, acc, comp, ult, cameraProcessor);
+				break;
+				case CLOSE_DEPOSIT:
+					stateCloseDeposit(act, acc, comp, ult, cameraProcessor);
 				break;
 			}
 			
@@ -909,13 +947,15 @@ public class RobotBrain
 			}
 		
 			
-			state = GO_TO_CAN;
+			//state = GO_TO_CAN;
+			state = OPEN_DEPOSIT;
 			
 			lastTrashTime = System.currentTimeMillis();
 		}
 		else if (state == STOP)
 		{
-			state = GO_TO_CAN;
+			//state = GO_TO_CAN;
+			state = OPEN_DEPOSIT;
 			
 		}
 		else

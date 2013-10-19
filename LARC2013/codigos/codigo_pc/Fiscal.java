@@ -19,7 +19,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private MessageAssembler msgAssembler;
 	
 
-	private final String IP_ANDROID = "192.168.0.116";
+	private final String IP_ANDROID = "192.168.0.114";
 	//private final String IP_ANDROID = "192.168.43.1";	//galaxy
 	private final int PORT_ANDROID = 18550;
 	

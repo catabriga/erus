@@ -51,7 +51,7 @@ public class MessageAssembler
 		msgSizeTable[Protocol.MOTOR_E] = 3;
 		msgSizeTable[Protocol.MOTOR_VASSOURA] = 3;
 		msgSizeTable[Protocol.SERVO] = 2;
-		msgSizeTable[Protocol.MOTOR_VIBRADOR] = 2;
+		msgSizeTable[Protocol.MOTOR_VIBRATOR] = 2;
 		
 		msgSizeTable[Protocol.ULTRASOUND] = 8;		
 		msgSizeTable[Protocol.BUTTON_START] = 2;
