@@ -21,7 +21,7 @@ public class RobotBrain
 	public static final int CATCHABLE_CAN_LIMIT_X = 40;
 	public static final int MIN_OBSTACLE_DISTANCE = 30;
 	
-	public static final int DEFAULT_VELOCITY = 80;
+	public static final int DEFAULT_VELOCITY = 100;
 	
 	// States
 	private static final int NO_STATE = -1;
@@ -371,7 +371,7 @@ public class RobotBrain
 	private void stateSearchCan(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
 		Can can = getNearestCan(cameraProcessor);
-		
+		double random = Math.random();
 		if(can != null)
 		{
 			state = GO_TO_CAN;
@@ -379,9 +379,13 @@ public class RobotBrain
 		else
 		{
 			//pcPrint("search Can");
-			if(Math.random() < 0.2)
+			if(random < 0.2)
 			{
 				state = RIGHT;
+			}
+			else if(random < 0.4)
+			{
+				state = FORWARD;
 			}
 			else
 			{
@@ -425,7 +429,7 @@ public class RobotBrain
 		
 		if(lastState != FORWARD)
 		{
-			time = System.currentTimeMillis() + 500;
+			time = System.currentTimeMillis() + 1000;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
@@ -947,15 +951,13 @@ public class RobotBrain
 			}
 		
 			
-			//state = GO_TO_CAN;
-			state = OPEN_DEPOSIT;
+			state = GO_TO_CAN;
 			
 			lastTrashTime = System.currentTimeMillis();
 		}
 		else if (state == STOP)
 		{
-			//state = GO_TO_CAN;
-			state = OPEN_DEPOSIT;
+			state = GO_TO_CAN;
 			
 		}
 		else
