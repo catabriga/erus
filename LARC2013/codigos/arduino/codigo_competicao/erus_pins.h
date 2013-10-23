@@ -38,7 +38,7 @@
 #define US_ECHO_CENTER_UP 40
 #define US_TRIG_RIGHT_BACK 30
 #define US_ECHO_RIGHT_BACK 32
-#define US_TRIG_LEFT_BACK 42
-#define US_ECHO_LEFT_BACK 44
+#define US_TRIG_LEFT_BACK 44
+#define US_ECHO_LEFT_BACK 42
 
 #endif
