@@ -6,7 +6,7 @@ public class Protocol
 	public static final byte MOTOR_E = 0x12;
 	public static final byte MOTOR_VASSOURA = 0x13;
 	public static final byte SERVO = 0x14;
-	public static final byte MOTOR_VIBRADOR = 0x15;
+	public static final byte MOTOR_VIBRATOR = 0x15;
 	
 	public static final byte ULTRASOUND = 0x31;
 	public static final byte BUTTON_START = 0x32;

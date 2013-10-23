@@ -139,6 +139,7 @@ void setServoMotor(uint8_t velocity)
 void setVibratorMotor(int velocity)
 {
 	analogWrite(VIB_PWM, velocity);
+	Serial.println(velocity);
 }
 
 void processMessages()
