@@ -511,7 +511,8 @@ public class RobotBrain
 		}
 		*/
 		
-		if(camera.getTotalSandArea() < camera.getFrameHeight() * camera.getFrameWidth() / 8)
+		//if(camera.getTotalSandArea() < camera.getFrameHeight() * camera.getFrameWidth() / 8)
+		if(camera.getBlueLimits() < camera.getFrameHeight()/5)
 		{
 			state = RUN_FROM_OBSTACLE_1;
 		}
