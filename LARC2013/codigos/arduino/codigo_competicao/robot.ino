@@ -251,7 +251,17 @@ void sendUltrasoundMessage(unsigned int* values)
 	infrared = analogRead(INFRARED);
 	infrared = infrared>>2;
 	data[7] = (uint8_t) (infrared);
-	//Serial.println(data[7]);
+	/*Serial.print(data[1]);
+	Serial.print(", ");
+	Serial.print(data[2]);
+	Serial.print(", ");
+	Serial.print(data[3]);
+	Serial.print(", ");
+	Serial.print(data[4]);
+	Serial.print(", ");
+	Serial.print(data[5]);
+	Serial.print(", ");
+	Serial.println(data[6]);*/
 	
 	connection->write(8, data);
 }
@@ -263,11 +273,7 @@ void handleUltrasound(void)
 	{
 		unsigned int* uValues = getUltrasoundValues();
 		sendUltrasoundMessage(uValues);
-		/*Serial.print(uValues[0]);
-		Serial.print(" ,");
-		Serial.print(uValues[1]);
-		Serial.print(" ,");
-		Serial.println(uValues[2]);*/
+		
 
 		startUltrasoundCycle();
 	}
