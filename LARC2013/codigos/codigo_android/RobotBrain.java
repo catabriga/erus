@@ -28,13 +28,18 @@ public class RobotBrain
 	private static final int WAIT_START = 0;
 	private static final int STOP = 1002;
 	
-	private static final int GO_TO_CAN = 2002;
+	private static final int GO_TO_CAN_FORWARD = 2001;
+	private static final int GO_TO_CAN_TURN = 2002;
 	private static final int SEARCH_CAN = 2003;
-	private static final int LEFT = 2004;
-	private static final int LEFT_PAUSE = 2005;
-	private static final int RIGHT = 2006;
-	private static final int RIGHT_PAUSE = 2007;
-	private static final int FORWARD = 2008;
+	private static final int LEFT_1 = 2011;
+	private static final int LEFT_2 = 2012;
+	private static final int LEFT_3 = 2013;
+	private static final int LEFT_4 = 2014;
+	private static final int RIGHT_1 = 2021;
+	private static final int RIGHT_2 = 2022;
+	private static final int RIGHT_3 = 2023;
+	private static final int RIGHT_4 = 2024;
+	private static final int FORWARD = 2004;
 	
 	private static final int GO_TO_TRASH = 3010;
 	private static final int GO_TO_TRASH_DEBOUNCE_ULTRASOUND = 3011;
@@ -52,6 +57,9 @@ public class RobotBrain
 	private static final int OPEN_DEPOSIT = 8001;
 	private static final int BACKUP_FROM_TRASH = 8002;
 	private static final int CLOSE_DEPOSIT = 8003;
+	
+	private static final int TURNING_TIME = 1500;
+	private static final int SEARCHING_TIME = 1500;
 	
 	private int state;
 	private int lastState;
@@ -304,11 +312,40 @@ public class RobotBrain
 		
 	}
 	
-	private void stateGoToCan(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	private void stateGoToCanForward(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{			
-		if(lastState != GO_TO_CAN)
+		if(lastState != GO_TO_CAN_FORWARD)
 		{
-			time = System.currentTimeMillis() - 1000;
+			time = System.currentTimeMillis() + SEARCHING_TIME;
+		}
+		
+		Can can = getNearestCan(cameraProcessor);
+			
+		if(can == null)
+		{
+			state = FORWARD;
+		}
+		else
+		{							
+			
+			setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+			
+			setVassouraMovement(-100);
+		}
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = GO_TO_CAN_TURN;
+		}
+						
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateGoToCanTurn(Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{			
+		if(lastState != GO_TO_CAN_TURN)
+		{
+			time = System.currentTimeMillis() + SEARCHING_TIME;
 		}
 		
 		Can can = getNearestCan(cameraProcessor);
@@ -316,11 +353,10 @@ public class RobotBrain
 		int width = cameraProcessor.getFrameWidth();		
 		int robotCenter = width/2 + (int)(ROBOT_CENTER_OFFSET*width);		
 		double error = 0;
-		double k = 50.0;
 	
 		if(can != null)
 		{
-			error = k*((can.position.x) - robotCenter)/(double)width;
+			error = ((can.position.x) - robotCenter)/((double)width);
 		}
 				
 		if(can == null)
@@ -328,17 +364,25 @@ public class RobotBrain
 			state = FORWARD;
 		}
 		else
-		{			
-			if(System.currentTimeMillis() > time + 25)	// This is done so that the robot is not sent a million messages a second
+		{							
+			
+			if(error > 0.25)
 			{
-				time = System.currentTimeMillis();				
-				
-				int powerLeft = (int)(DEFAULT_VELOCITY + error);
-				int powerRight = (int)(DEFAULT_VELOCITY - error);
-								
-				setMotorsMovement(powerLeft, powerRight);
-				setVassouraMovement(-100);
+				setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+			} 
+			else if (error < -0.25){
+				setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
 			}
+			else
+			{
+				state = GO_TO_CAN_FORWARD;
+			}
+			setVassouraMovement(-100);
+		}
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = GO_TO_CAN_FORWARD;
 		}
 						
 		checkObstacle(cameraProcessor, ult);
@@ -376,14 +420,14 @@ public class RobotBrain
 		double random = Math.random();
 		if(can != null)
 		{
-			state = GO_TO_CAN;
+			state = GO_TO_CAN_TURN;
 		}
 		else
 		{
 			//pcPrint("search Can");
 			if(random < 0.2)
 			{
-				state = RIGHT;
+				state = RIGHT_1;
 			}
 			else if(random < 0.4)
 			{
@@ -391,7 +435,7 @@ public class RobotBrain
 			}
 			else
 			{
-				state = LEFT;
+				state = LEFT_1;
 			}
 		}
 		
@@ -399,13 +443,13 @@ public class RobotBrain
 		checkObstacle(cameraProcessor, ult);
 	}
 	
-	private void stateLeft(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	private void stateLeft1(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
 		Can can = getNearestCan(cameraProcessor);
 		
-		if(lastState != LEFT)
+		if(lastState != LEFT_1)
 		{
-			time = System.currentTimeMillis() + 750;
+			time = System.currentTimeMillis() + TURNING_TIME;
 		}
 		
 		setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
@@ -413,12 +457,90 @@ public class RobotBrain
 		
 		if(System.currentTimeMillis() > time)
 		{
-			state = LEFT_PAUSE;			
+			state = LEFT_2;			
 		}
 		
 		if(can != null)
 		{
-			state = GO_TO_CAN;
+			state = GO_TO_CAN_TURN;
+		}
+		
+		checkTrashTime();
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateLeft2(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		Can can = getNearestCan(cameraProcessor);
+		
+		if(lastState != LEFT_1)
+		{
+			time = System.currentTimeMillis() + TURNING_TIME;
+		}
+		
+		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = LEFT_3;			
+		}
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN_TURN;
+		}
+		
+		checkTrashTime();
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateLeft3(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		Can can = getNearestCan(cameraProcessor);
+		
+		if(lastState != LEFT_3)
+		{
+			time = System.currentTimeMillis() + TURNING_TIME;
+		}
+		
+		setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = LEFT_4;			
+		}
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN_TURN;
+		}
+		
+		checkTrashTime();
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateLeft4(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		Can can = getNearestCan(cameraProcessor);
+		
+		if(lastState != LEFT_4)
+		{
+			time = System.currentTimeMillis() + TURNING_TIME;
+		}
+		
+		setMotorsMovement(-DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
+		
+		if(System.currentTimeMillis() > time)
+		{
+			state = LEFT_1;			
+		}
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN_TURN;
 		}
 		
 		checkTrashTime();
@@ -431,7 +553,7 @@ public class RobotBrain
 		
 		if(lastState != FORWARD)
 		{
-			time = System.currentTimeMillis() + 1000;
+			time = System.currentTimeMillis() + 2000;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
@@ -444,46 +566,20 @@ public class RobotBrain
 		
 		if(can != null)
 		{
-			state = GO_TO_CAN;
+			state = GO_TO_CAN_TURN;
 		}
 		
 		checkTrashTime();
 		checkObstacle(cameraProcessor, ult);
 	}
 	
-	private void stateLeftPause(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	private void stateRight1(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
 		Can can = getNearestCan(cameraProcessor);
 		
-		if(lastState != LEFT_PAUSE)
+		if(lastState != RIGHT_1)
 		{
-			time = System.currentTimeMillis() + 500;
-		}
-		
-		setMotorsMovement(0, 0);
-		setVassouraMovement(-100);
-		
-		if(System.currentTimeMillis() > time)
-		{
-			state = LEFT;			
-		}
-		
-		if(can != null)
-		{
-			state = GO_TO_CAN;
-		}
-		
-		checkTrashTime();
-		checkObstacle(cameraProcessor, ult);
-	}
-	
-	private void stateRight(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
-	{
-		Can can = getNearestCan(cameraProcessor);
-		
-		if(lastState != RIGHT)
-		{
-			time = System.currentTimeMillis() + 750;
+			time = System.currentTimeMillis() + TURNING_TIME;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
@@ -491,12 +587,12 @@ public class RobotBrain
 			
 		if(System.currentTimeMillis() > time)
 		{			
-			state = RIGHT_PAUSE;
+			state = RIGHT_2;
 		}
 		
 		if(can != null)
 		{
-			state = GO_TO_CAN;
+			state = GO_TO_CAN_TURN;
 			return;
 		}
 		
@@ -504,26 +600,81 @@ public class RobotBrain
 		checkObstacle(cameraProcessor, ult);
 	}
 	
-	private void stateRightPause(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	private void stateRight2(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
 		Can can = getNearestCan(cameraProcessor);
 		
-		if(lastState != RIGHT_PAUSE)
+		if(lastState != RIGHT_2)
 		{
-			time = System.currentTimeMillis() + 500;
+			time = System.currentTimeMillis() + TURNING_TIME;
 		}
 		
-		setMotorsMovement(0, 0);
+		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
 		setVassouraMovement(-100);
-		
+			
 		if(System.currentTimeMillis() > time)
-		{
-			state = RIGHT;			
+		{			
+			state = RIGHT_3;
 		}
 		
 		if(can != null)
 		{
-			state = GO_TO_CAN;
+			state = GO_TO_CAN_TURN;
+			return;
+		}
+		
+		checkTrashTime();
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateRight3(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		Can can = getNearestCan(cameraProcessor);
+		
+		if(lastState != RIGHT_3)
+		{
+			time = System.currentTimeMillis() + TURNING_TIME;
+		}
+		
+		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
+			
+		if(System.currentTimeMillis() > time)
+		{			
+			state = RIGHT_4;
+		}
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN_TURN;
+			return;
+		}
+		
+		checkTrashTime();
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateRight4(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		Can can = getNearestCan(cameraProcessor);
+		
+		if(lastState != RIGHT_4)
+		{
+			time = System.currentTimeMillis() + TURNING_TIME;
+		}
+		
+		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
+			
+		if(System.currentTimeMillis() > time)
+		{			
+			state = RIGHT_1;
+		}
+		
+		if(can != null)
+		{
+			state = GO_TO_CAN_TURN;
+			return;
 		}
 		
 		checkTrashTime();
@@ -856,23 +1007,38 @@ public class RobotBrain
 				case STOP:
 					stateStop(acc, comp, ult, cameraProcessor);
 				break;
-				case GO_TO_CAN:
-					stateGoToCan(acc, comp, ult, cameraProcessor);
+				case GO_TO_CAN_TURN:
+					stateGoToCanTurn(acc, comp, ult, cameraProcessor);
+				break;
+				case GO_TO_CAN_FORWARD:
+					stateGoToCanForward(acc, comp, ult, cameraProcessor);
 				break;
 				case SEARCH_CAN:
 					stateSearchCan(acc, comp, ult, cameraProcessor);
 				break;
-				case LEFT:
-					stateLeft(act, acc, comp, ult, cameraProcessor);
+				case LEFT_1:
+					stateLeft1(act, acc, comp, ult, cameraProcessor);
 				break;
-				case LEFT_PAUSE:
-					stateLeftPause(act, acc, comp, ult, cameraProcessor);
+				case LEFT_2:
+					stateLeft2(act, acc, comp, ult, cameraProcessor);
 				break;
-				case RIGHT:
-					stateRight(act, acc, comp, ult, cameraProcessor);
+				case LEFT_3:
+					stateLeft3(act, acc, comp, ult, cameraProcessor);
 				break;
-				case RIGHT_PAUSE:
-					stateRightPause(act, acc, comp, ult, cameraProcessor);
+				case LEFT_4:
+					stateLeft4(act, acc, comp, ult, cameraProcessor);
+				break;
+				case RIGHT_1:
+					stateRight1(act, acc, comp, ult, cameraProcessor);
+				break;
+				case RIGHT_2:
+					stateRight2(act, acc, comp, ult, cameraProcessor);
+				break;
+				case RIGHT_3:
+					stateRight3(act, acc, comp, ult, cameraProcessor);
+				break;
+				case RIGHT_4:
+					stateRight4(act, acc, comp, ult, cameraProcessor);
 				break;
 				case FORWARD:
 					stateForward(act, acc, comp, ult, cameraProcessor);
@@ -955,13 +1121,13 @@ public class RobotBrain
 			}
 		
 			
-			state = GO_TO_CAN;
+			state = GO_TO_CAN_TURN;
 			
 			lastTrashTime = System.currentTimeMillis();
 		}
 		else if (state == STOP)
 		{
-			state = GO_TO_CAN;
+			state = GO_TO_CAN_TURN;
 			
 		}
 		else
