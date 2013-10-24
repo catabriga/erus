@@ -534,16 +534,20 @@ public class RobotBrain
 	{
 		if(ult.getUs1() < 40 || ult.getUs2() < 40 || ult.getUs4() < 40)
 		{
+			pcPrint("Ultrasound Obstacle");
 			state = RUN_FROM_OBSTACLE_0;
 		}
 		
 		
 		if(camera.getTrashSize() > 500)
 		{
+			pcPrint("Trash Size");
 			state = RUN_FROM_OBSTACLE_1;
 		}
 		
 		
+		//pcPrint(camera.getBlueLimits() + " < " + camera.getFrameHeight()/5);
+		//pcPrint(camera.getTotalBlueArea() + " > " + camera.getFrameHeight() * camera.getFrameWidth() / 8);
 		//if(camera.getTotalSandArea() < camera.getFrameHeight() * camera.getFrameWidth() / 8)
 		if(camera.getBlueLimits() < camera.getFrameHeight()/5 && camera.getTotalBlueArea() > camera.getFrameHeight() * camera.getFrameWidth() / 8)
 		{

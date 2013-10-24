@@ -45,7 +45,7 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 	private final byte stop2[] = {0x11,0,0,0x12,0,0};
 	private final byte reqImg[] = {0x61};
 	
-	private final byte ligaVassoura[] = {0x13,(byte)230,1};
+	private final byte ligaVassoura[] = {0x13,(byte)255,0};
 	private final byte desligaVassoura[] = {0x13,0,1};
 
 	private final byte openDeposit[] = {0x14,(byte) 77};
@@ -701,8 +701,10 @@ public class Fiscal extends JFrame implements KeyListener, MouseListener, Runnab
 				}
 			}break;
 			
-			case 76://v -> liga ou desliga a vassoura
+			case 86://v -> liga ou desliga a vassoura
 			{
+				System.out.println("Vassoura");
+				
 				if(vassouraRodando)
 				{
 					vassouraRodando = false;

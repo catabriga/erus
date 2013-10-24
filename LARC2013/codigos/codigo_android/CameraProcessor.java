@@ -221,7 +221,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 						
 			int area = (int) Imgproc.contourArea(mp);
 			
-			totalSandArea += area;
+			totalBlueArea += area;
 			
 			org.opencv.core.Point[] pt = mp.toArray();
 			
