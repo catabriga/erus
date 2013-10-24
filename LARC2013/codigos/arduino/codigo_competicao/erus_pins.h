@@ -30,15 +30,15 @@
 //Ultrasons
 #define US_TRIG_RIGHT 45
 #define US_ECHO_RIGHT 43
-#define US_TRIG_LEFT 44
-#define US_ECHO_LEFT 42
+#define US_TRIG_LEFT 28
+#define US_ECHO_LEFT 26
 #define US_TRIG_CENTER_DOWN 47
 #define US_ECHO_CENTER_DOWN 49
 #define US_TRIG_CENTER_UP 38
 #define US_ECHO_CENTER_UP 40
 #define US_TRIG_RIGHT_BACK 30
 #define US_ECHO_RIGHT_BACK 32
-#define US_TRIG_LEFT_BACK 28
-#define US_ECHO_LEFT_BACK 26
+#define US_TRIG_LEFT_BACK 44
+#define US_ECHO_LEFT_BACK 42
 
 #endif
