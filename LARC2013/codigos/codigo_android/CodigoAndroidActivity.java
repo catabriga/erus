@@ -364,7 +364,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 			{
 				mUltraSound.refresh(msg);
 				erusView.setUltraSound(mUltraSound.getUs1(), mUltraSound.getUs2(), mUltraSound.getUs3(), mUltraSound.getUs4(), mUltraSound.getUs5(), mUltraSound.getUs6(), mUltraSound.getInfra());
-				//pcPrint(mUltraSound.getUs1() + " " + mUltraSound.getUs2()  + " " +  mUltraSound.getUs3()  + " " +  mUltraSound.getUs4() + " " +  mUltraSound.getUs5() + " " +  mUltraSound.getUs6());
+				pcPrint(mUltraSound.getUs1() + " " + mUltraSound.getUs2()  + " " +  mUltraSound.getUs3()  + " " +  mUltraSound.getUs4() + " " +  mUltraSound.getUs5() + " " +  mUltraSound.getUs6());
 			}break;
 			
 	    	case Protocol.BUTTON_START:

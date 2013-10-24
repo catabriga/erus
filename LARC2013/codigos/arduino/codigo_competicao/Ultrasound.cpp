@@ -1,50 +1,33 @@
 #include "Ultrasound.h"
+#include "erus_pins.h"
 #include "NewPing.h" 
 
 #define SONAR_NUM     6 // Number or sensors.
 #define MAX_DISTANCE 200 // Maximum distance (in cm) to ping.
 #define PING_INTERVAL 40 // Milliseconds between sensor pings (29ms is about the min to avoid cross-sensor echo).
 
-static unsigned long pingTimer[SONAR_NUM]; // Holds the times when the next ping should happen for each sensor.
-unsigned int cm[SONAR_NUM];         // Where the ping distances are stored.
-unsigned long pingTimes[SONAR_NUM];	// Where the ping times are stored.
-uint8_t currentSensor;          // Keeps track of which sensor is active.
+static unsigned int cm[SONAR_NUM];         // Where the ping distances are stored.
+static unsigned long pingTimes[SONAR_NUM];	// Where the ping times are stored.
+static uint8_t currentSensor;          // Keeps track of which sensor is active.
+static unsigned long nextPingTime;
+static int reading;
 
-NewPing sonar[SONAR_NUM];
-
-int reading;
-
-void setPingTimes(int initialDelay)
-{
-	pingTimer[0] = millis() + initialDelay;
-
-	for (uint8_t i = 1; i < SONAR_NUM; i++) // Set the starting time for each sensor.
-	{
-		pingTimer[i] = pingTimer[i - 1] + PING_INTERVAL;
-	}
-}
+static NewPing sonar[SONAR_NUM] = {
+	NewPing(US_TRIG_RIGHT, US_ECHO_RIGHT, MAX_DISTANCE),
+	NewPing(US_TRIG_LEFT, US_ECHO_LEFT, MAX_DISTANCE),
+	NewPing(US_TRIG_CENTER_DOWN, US_ECHO_CENTER_DOWN, MAX_DISTANCE),
+	NewPing(US_TRIG_CENTER_UP, US_ECHO_CENTER_UP, MAX_DISTANCE),
+	NewPing(US_TRIG_RIGHT_BACK, US_ECHO_RIGHT_BACK, MAX_DISTANCE),
+	NewPing(US_TRIG_LEFT_BACK, US_ECHO_LEFT_BACK, MAX_DISTANCE)
+};
 
 void setupUltrasound(void)
 {
-	sonar[0] = NewPing(US_TRIG_RIGHT, US_ECHO_RIGHT, MAX_DISTANCE);
-	sonar[1] = NewPing(US_TRIG_LEFT, US_ECHO_LEFT, MAX_DISTANCE);
-	sonar[2] = NewPing(US_TRIG_CENTER_DOWN, US_ECHO_CENTER_DOWN, MAX_DISTANCE);
-	sonar[3] = NewPing(US_TRIG_CENTER_UP, US_ECHO_CENTER_UP, MAX_DISTANCE);
-	sonar[4] = NewPing(US_TRIG_RIGHT_BACK, US_ECHO_RIGHT_BACK, MAX_DISTANCE);
-	sonar[5] = NewPing(US_TRIG_LEFT_BACK, US_ECHO_LEFT_BACK, MAX_DISTANCE);
-
-	currentSensor = 0;
+	
+	currentSensor = -1;
 	reading = 1;
-	setPingTimes(75); // First ping starts at 75ms, gives time for the Arduino to chill before starting.
+	nextPingTime = millis() + 75;
 }
-
-void startUltrasoundCycle(void)
-{
-	currentSensor = 0;
-	reading = 1;
-	setPingTimes(75);
-}
-
 
 void echoCheck(void)
 {
@@ -53,6 +36,17 @@ void echoCheck(void)
 		pingTimes[currentSensor] = sonar[currentSensor].ping_result;
 	}
 }
+
+void startUltrasoundCycle(void)
+{
+	currentSensor = -1;
+	reading = 1;
+	nextPingTime = millis() + 75;
+	
+	pingTimes[currentSensor] = 50000; // MAX distance in case nothing returns
+	sonar[currentSensor].ping_timer(echoCheck); // Do the ping (processing continues, interrupt will call echoCheck to look for echo).
+}
+
 
 void oneSensorCycle(void) 
 {
@@ -63,21 +57,25 @@ void loopUltrasound(void)
 {
 	if(reading)
 	{
-		for (uint8_t i = 0; i < SONAR_NUM; i++) 
+		if (millis() >= nextPingTime)
 		{
-			if (millis() >= pingTimer[i])
+			if(currentSensor >= 0)
 			{
-				pingTimer[i] += PING_INTERVAL * SONAR_NUM;  // Set next time this sensor will be pinged.
-				if (i == 0 && currentSensor == SONAR_NUM - 1)
-				{
-					oneSensorCycle(); // Sensor ping cycle complete do something with the results.
-					return;
-				}
-
 				sonar[currentSensor].timer_stop(); // Make sure previous timer is canceled before starting a new ping (insurance).
-				currentSensor = i; // Sensor being accessed.
+			}
+			
+			currentSensor++;
+			nextPingTime += PING_INTERVAL;
+					
+			if(currentSensor < SONAR_NUM)
+			{
 				pingTimes[currentSensor] = 50000; // MAX distance in case nothing returns
-				sonar[currentSensor].ping_timer(echoCheck); // Do the ping (processing continues, interrupt will call echoCheck to look for echo).
+				sonar[currentSensor].ping_timer(echoCheck); // Do the ping, interrupt will call echoCheck to look for echo).
+			}
+		
+			if (currentSensor >= SONAR_NUM)
+			{
+				oneSensorCycle();
 			}
 		}
 	}
