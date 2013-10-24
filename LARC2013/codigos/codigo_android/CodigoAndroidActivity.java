@@ -323,6 +323,7 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 			case Protocol.REQUEST_IMAGE:
 			{
 				sendSensorDataToPC(pcMessages);
+				pcPrint("Trash size: "+cameraProcessor.getTrashSize());
 			}break;
 			
 			case Protocol.IMG_CALIB_DISK:

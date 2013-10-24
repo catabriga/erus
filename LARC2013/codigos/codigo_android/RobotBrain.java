@@ -140,6 +140,8 @@ public class RobotBrain
 		
 	private void setMotorsMovement(int leftMotor, int rightMotor) throws IOException
 	{	
+		leftMotor = -leftMotor;
+		
 		leftMotor = checkPowerLimits(leftMotor);
 		rightMotor = checkPowerLimits(rightMotor);
 		
@@ -335,7 +337,7 @@ public class RobotBrain
 				int powerRight = (int)(DEFAULT_VELOCITY - error);
 								
 				setMotorsMovement(powerLeft, powerRight);
-				setVassouraMovement(70);
+				setVassouraMovement(-100);
 			}
 		}
 						
@@ -407,7 +409,7 @@ public class RobotBrain
 		}
 		
 		setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
-		setVassouraMovement(70);
+		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time)
 		{
@@ -433,7 +435,7 @@ public class RobotBrain
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
-		setVassouraMovement(70);
+		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time)
 		{
@@ -459,7 +461,7 @@ public class RobotBrain
 		}
 		
 		setMotorsMovement(0, 0);
-		setVassouraMovement(-70);
+		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time)
 		{
@@ -485,7 +487,7 @@ public class RobotBrain
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
-		setVassouraMovement(70);
+		setVassouraMovement(-100);
 			
 		if(System.currentTimeMillis() > time)
 		{			
@@ -512,7 +514,7 @@ public class RobotBrain
 		}
 		
 		setMotorsMovement(0, 0);
-		setVassouraMovement(-70);
+		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time)
 		{
@@ -535,16 +537,17 @@ public class RobotBrain
 			state = RUN_FROM_OBSTACLE_0;
 		}
 		
-		/*
-		if(trash.size > 100)
+		
+		if(camera.getTrashSize() > 500)
 		{
 			state = RUN_FROM_OBSTACLE_1;
 		}
-		*/
+		
 		
 		//if(camera.getTotalSandArea() < camera.getFrameHeight() * camera.getFrameWidth() / 8)
-		if(camera.getBlueLimits() < camera.getFrameHeight()/5)
+		if(camera.getBlueLimits() < camera.getFrameHeight()/5 && camera.getTotalBlueArea() > camera.getFrameHeight() * camera.getFrameWidth() / 8)
 		{
+			pcPrint("Obstacle blue limits");
 			state = RUN_FROM_OBSTACLE_1;
 		}
 	}
@@ -746,7 +749,7 @@ public class RobotBrain
 				int powerRight = (int)(DEFAULT_VELOCITY - error);
 								
 				setMotorsMovement(powerLeft, powerRight);
-				setVassouraMovement(70);
+				setVassouraMovement(-100);
 			}
 			
 			if(ult.getInfra() < 300)
@@ -794,7 +797,7 @@ public class RobotBrain
 		}
 		
 		setMotorsMovement(0, 0);
-		setVassouraMovement(70);
+		setVassouraMovement(-100);
 		setMotorDoor(-50);
 		setVibrator(60);
 		

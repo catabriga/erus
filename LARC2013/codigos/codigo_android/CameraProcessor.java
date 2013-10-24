@@ -51,6 +51,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 	private int minBlue;
 	private int maxSand;
 	private int totalSandArea;
+	private int totalBlueArea;
 	private Point trashPosition;
 	private int trashSize;
 	
@@ -212,11 +213,16 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		Iterator<MatOfPoint> itr = blueContour.iterator();
 				
 		this.minBlue = Integer.MAX_VALUE;
+		this.totalBlueArea = 0;
 		
 		while(itr.hasNext())
 		{
 			MatOfPoint mp = (MatOfPoint) itr.next();
 						
+			int area = (int) Imgproc.contourArea(mp);
+			
+			totalSandArea += area;
+			
 			org.opencv.core.Point[] pt = mp.toArray();
 			
 			for(int i=0; i < pt.length; i++)
@@ -276,7 +282,7 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 		matYUV.put(0, 0, data);
 		Imgproc.cvtColor(matYUV, matRGB, Imgproc.COLOR_YUV420sp2RGB, 3);
 				
-		int imgBoundary = 4*matRGB.rows()/5;
+		int imgBoundary = matRGB.rows();
 		
 		Mat subMatRGB = matRGB.submat( 0, imgBoundary, 0, matRGB.cols());
 		CBD.process(subMatRGB);
@@ -410,6 +416,12 @@ public class CameraProcessor extends SurfaceView implements SurfaceHolder.Callba
 	{
 		return totalSandArea;
 	}
+	
+	public synchronized int getTotalBlueArea()
+	{
+		return totalBlueArea;
+	}
+	
 	
 /*
 	//TEM QUE VERIFICAR ESSA FUNÇÃO
