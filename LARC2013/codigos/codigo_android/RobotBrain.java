@@ -979,7 +979,7 @@ public class RobotBrain
 	{			
 		if(lastState != GO_TO_TRASH_TURN)
 		{
-			time = System.currentTimeMillis() - 1000;
+			time = System.currentTimeMillis() + SEARCHING_TIME;
 		}
 		
 		Point trashPosition = cameraProcessor.getTrashPosition();
@@ -1007,7 +1007,44 @@ public class RobotBrain
 							
 			setVassouraMovement(-100);
 			
+			if(System.currentTimeMillis() > time)
+			{
+				state = GO_TO_TRASH_FORWARD;
+			}
 			
+			if(ult.getInfra() < 300)
+			{
+				state = GO_TO_TRASH_DEBOUNCE_ULTRASOUND;
+//				setMotorsMovement(0, 0);
+			}
+		}
+		else
+		{
+			state = SEARCH_TRASH;
+			//setMotorsMovement(0, 0);
+		}
+							
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void stateGoToTrashForward(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{			
+		if(lastState != GO_TO_TRASH_FORWARD)
+		{
+			time = System.currentTimeMillis() + SEARCHING_TIME;
+		}
+		
+		Point trashPosition = cameraProcessor.getTrashPosition();
+		
+		if(trashPosition.x > 0)
+		{
+			setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);		
+			setVassouraMovement(-100);
+			
+			if(System.currentTimeMillis() > time)
+			{
+				state = GO_TO_TRASH_FORWARD;
+			}
 			
 			if(ult.getInfra() < 300)
 			{
@@ -1188,7 +1225,7 @@ public class RobotBrain
 					stateGoToTrashTurn(act, acc, comp, ult, cameraProcessor);
 				break;
 				case GO_TO_TRASH_FORWARD:
-					//stateGoToTrashForward(act, acc, comp, ult, cameraProcessor);
+					stateGoToTrashForward(act, acc, comp, ult, cameraProcessor);
 				break;
 				case GO_TO_TRASH_DEBOUNCE_ULTRASOUND:
 					stateGoToTrashDebounceUltrasound(act, acc, comp, ult, cameraProcessor);
