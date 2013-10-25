@@ -61,6 +61,12 @@ void setupButton(void)
 	digitalWrite(START_BUTTON, HIGH);
 }
 
+void setupObstacleButton(void)
+{
+	pinMode(OBSTACLE_BUTTON, INPUT);
+	digitalWrite(OBSTACLE_BUTTON, HIGH);
+}
+
 void setupServoMotor(void)
 {       
 	servoMotor.attach(SERVO_PIN);
@@ -124,6 +130,7 @@ void setup()
 	setupVibrationMotor();
 	setupUltrasound();
 	setupButton();
+	setupObstacleButton();
 	setupInfraRed();
 	
 	messageAssembler = createMessageAssembler();
@@ -215,116 +222,4 @@ void sendUltrasoundMessage(unsigned int* values)
 	data[0] = 0x31;
 	if(values[0] > 255)
 	{
-		data[1] = (uint8_t) 255; //limite da distancia
-	} else {
-		data[1] = (uint8_t) values[0];
-	}
-	if(values[1] > 255)
-	{
-		data[2] = (uint8_t) 255; //limite da distancia
-	} else {
-		data[2] = (uint8_t) values[1];
-	}
-	if(values[2] > 255)
-	{
-		data[3] = (uint8_t) 255; //limite da distancia
-	} else {
-		data[3] = (uint8_t) values[2];
-	}
-	if(values[3] > 255)
-	{
-		data[4] = (uint8_t) 255; //limite da distancia
-	} else {
-		data[4] = (uint8_t) values[3];
-	}
-	if(values[4] > 255)
-	{
-		data[5] = (uint8_t) 255; //limite da distancia
-	} else {
-		data[5] = (uint8_t) values[4];
-	}
-	if(values[5] > 255)
-	{
-		data[6] = (uint8_t) 255; //limite da distancia
-	} else {
-		data[6] = (uint8_t) values[5];
-	}
-	infrared = analogRead(INFRARED);
-	infrared = infrared>>2;
-	data[7] = (uint8_t) (infrared);
-	/*Serial.print(data[1]);
-	Serial.print(", ");
-	Serial.print(data[2]);
-	Serial.print(", ");
-	Serial.print(data[3]);
-	Serial.print(", ");
-	Serial.print(data[4]);
-	Serial.print(", ");
-	Serial.print(data[5]);
-	Serial.print(", ");
-	Serial.println(data[6]);*/
-	
-	connection->write(8, data);
-}
-
-void handleUltrasound(void)
-{
-	loopUltrasound();
-	if(ultrasoundReadingReady())
-	{
-		unsigned int* uValues = getUltrasoundValues();
-		sendUltrasoundMessage(uValues);
-		
-
-		startUltrasoundCycle();
-	}
-}
-
-void sendButtonMessage(int state)
-{
-	uint8_t data[2] = {0x32, 0};
-	
-	if(!state)
-	{
-		data[1] = 1;
-	}
-
-	Serial.print("Button: ");
-	Serial.println(data[1]);
-	
-	connection->write(2, data);
-}
-
-void handleButton(void)
-{
-	static int lastButtonState = 0;
-	static int stateCount = 0;
-
-	int buttonState = digitalRead(START_BUTTON);
-
-	if(buttonState != lastButtonState)
-	{		
-		stateCount = 0;		
-	}
-	else if(stateCount <= DEBOUNCE_COUNT)
-	{
-		if(stateCount == DEBOUNCE_COUNT)
-		{
-			sendButtonMessage(buttonState);
-			
-		}
-		stateCount++;
-	}
-
-	lastButtonState = buttonState;
-}
-
-void loop()
-{
-	ADB::poll();
-	processMessages();
-	handleUltrasound();
-	handleButton();
-
-}		
-
+		data[1] = (uint8_

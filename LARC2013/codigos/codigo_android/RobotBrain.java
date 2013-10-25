@@ -78,6 +78,7 @@ public class RobotBrain
 	private int vibratorMotor;
 	private int buzzer;
 	private int counter;
+	private int obstacleButton;
 	
 	private Connection arduinoConnection;
 	private Connection pcConnection;
@@ -1260,6 +1261,11 @@ public class RobotBrain
 			
 			act.reconectArduino();
 		}		
+	}
+	
+	public void obstacleButtonPressed(int state)
+	{
+		this.obstacleButton = state;
 	}
 	
 	public void startButtonPressed()

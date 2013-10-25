@@ -364,7 +364,7 @@ void loop()
 	processMessages();
 	handleUltrasound();
 	handleButton();
-	handleObstacleButtonState();
+	handleObstacleButton();
 
 }		
 

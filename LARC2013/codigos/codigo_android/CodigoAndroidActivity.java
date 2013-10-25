@@ -375,6 +375,10 @@ public class CodigoAndroidActivity extends Activity implements Runnable
 	    			robotBrain.startButtonPressed();
 	    		}
 	    	}break;
+	    	case Protocol.OBSTACLE_BUTTON:
+	    	{
+	    		robotBrain.obstacleButtonPressed(msg[1]);
+	    	}
 	    	
 	    	 
     	}    	
