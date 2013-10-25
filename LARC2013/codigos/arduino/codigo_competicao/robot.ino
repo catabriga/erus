@@ -60,6 +60,12 @@ void setupButton(void)
 	digitalWrite(START_BUTTON, HIGH);
 }
 
+void setupObstacleButton(void)
+{
+	pinMode(OBSTACLE_BUTTON, INPUT);
+	digitalWrite(OBSTACLE_BUTTON, HIGH);
+}
+
 void setupServoMotor(void)
 {       
 	servoMotor.attach(SERVO_PIN);
@@ -123,6 +129,7 @@ void setup()
 	setupVibrationMotor();
 	setupUltrasound();
 	setupButton();
+	setupObstacleButton();
 	setupInfraRed();
 	
 	messageAssembler = createMessageAssembler();
@@ -224,25 +231,22 @@ void sendUltrasoundMessage(unsigned int* values)
 	} else {
 		data[2] = (uint8_t) values[1];
 	}
+
+	data[3] = (uint8_t) 255; //gambiarra muito feia, tirou um ultrassom para colocar um sensor de toque, fez isso para não alterar o código do android
+
 	if(values[2] > 255)
-	{
-		data[3] = (uint8_t) 255; //limite da distancia
-	} else {
-		data[3] = (uint8_t) values[2];
-	}
-	if(values[3] > 255)
 	{
 		data[4] = (uint8_t) 255; //limite da distancia
 	} else {
 		data[4] = (uint8_t) values[3];
 	}
-	if(values[4] > 255)
+	if(values[3] > 255)
 	{
 		data[5] = (uint8_t) 255; //limite da distancia
 	} else {
 		data[5] = (uint8_t) values[4];
 	}
-	if(values[5] > 255)
+	if(values[4] > 255)
 	{
 		data[6] = (uint8_t) 255; //limite da distancia
 	} else {
@@ -318,12 +322,49 @@ void handleButton(void)
 	lastButtonState = buttonState;
 }
 
+void sendObstacleButtonMessage(int state)
+{
+	uint8_t data[2] = {0x33, 0};
+	
+	if(!state)
+	{
+		data[1] = 1;
+	}
+
+	connection->write(2, data);
+}
+
+void handleObstacleButton(void)
+{
+	static int lastButtonState = 0;
+	static int stateCount = 0;
+
+	int buttonState = digitalRead(START_BUTTON);
+
+	if(buttonState != lastButtonState)
+	{		
+		stateCount = 0;		
+	}
+	else if(stateCount <= DEBOUNCE_COUNT)
+	{
+		if(stateCount == DEBOUNCE_COUNT)
+		{
+			sendObstacleButtonMessage(buttonState);
+			
+		}
+		stateCount++;
+	}
+
+	lastButtonState = buttonState;
+}
+
 void loop()
 {
 	ADB::poll();
 	processMessages();
 	handleUltrasound();
 	handleButton();
+	handleObstacleButtonState();
 
 }		
 
