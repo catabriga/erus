@@ -292,8 +292,8 @@ void sendButtonMessage(int state)
 		data[1] = 1;
 	}
 
-	Serial.print("Button: ");
-	Serial.println(data[1]);
+	/*Serial.print("Button: ");
+	Serial.println(data[1]);*/
 	
 	connection->write(2, data);
 }
@@ -330,6 +330,9 @@ void sendObstacleButtonMessage(int state)
 	{
 		data[1] = 1;
 	}
+	
+	Serial.print("Obstacle Button: ");
+	Serial.println(data[1]);
 
 	connection->write(2, data);
 }
@@ -339,7 +342,7 @@ void handleObstacleButton(void)
 	static int lastButtonState = 0;
 	static int stateCount = 0;
 
-	int buttonState = digitalRead(START_BUTTON);
+	int buttonState = digitalRead(OBSTACLE_BUTTON);
 
 	if(buttonState != lastButtonState)
 	{		
@@ -365,6 +368,6 @@ void loop()
 	handleUltrasound();
 	handleButton();
 	handleObstacleButton();
-
+	
 }		
 

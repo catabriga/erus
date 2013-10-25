@@ -64,7 +64,7 @@ public class RobotBrain
 	
 	private static final int TURNING_TIME = 500;
 	private static final int SEARCHING_TIME = 500;
-	private static final int NUMBER_OF_TURNINGS = 4;
+	private static final int NUMBER_OF_TURNINGS = 2;
 	
 	private int state;
 	private int lastState;
@@ -335,7 +335,14 @@ public class RobotBrain
 		else
 		{							
 			
-			setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+			if(System.currentTimeMillis()%600 < 200)
+			{
+				setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+			}
+			else
+			{
+				setMotorsMovement(0, 0);
+			}
 			
 			setVassouraMovement(-100);
 		}
@@ -482,10 +489,17 @@ public class RobotBrain
 		
 		if(lastState != LEFT_2)
 		{
-			time = System.currentTimeMillis() + TURNING_TIME + 3500;
+			time = System.currentTimeMillis() + TURNING_TIME + 4500;
 		}
 		
-		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		if(System.currentTimeMillis()%600 < 200)
+		{
+			setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		}
+		else
+		{
+			setMotorsMovement(0, 0);
+		}
 		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time)
@@ -560,10 +574,18 @@ public class RobotBrain
 		
 		if(lastState != FORWARD)
 		{
-			time = System.currentTimeMillis() + 3000 + (int)(10000 * Math.random())%4000;
+			time = System.currentTimeMillis() + 2000 + System.currentTimeMillis()%2000;
 		}
 		
-		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		if(System.currentTimeMillis()%600 < 200)
+		{
+			setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		}
+		else
+		{
+			setMotorsMovement(0, 0);
+		}
+		
 		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time)
@@ -571,10 +593,12 @@ public class RobotBrain
 			state = SEARCH_CAN;			
 		}
 		
+		/*
 		if(can != null)
 		{
 			state = GO_TO_CAN_TURN;
 		}
+		*/
 		
 		checkTrashTime();
 		checkObstacle(cameraProcessor, ult);
@@ -613,10 +637,17 @@ public class RobotBrain
 		
 		if(lastState != RIGHT_2)
 		{
-			time = System.currentTimeMillis() + TURNING_TIME + 3500;
+			time = System.currentTimeMillis() + TURNING_TIME + 4500;
 		}
 		
-		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		if(System.currentTimeMillis()%600 < 200)
+		{
+			setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		}
+		else
+		{
+			setMotorsMovement(0, 0);
+		}
 		setVassouraMovement(-100);
 			
 		if(System.currentTimeMillis() > time)
@@ -706,7 +737,16 @@ public class RobotBrain
 		
 		//pcPrint(camera.getBlueLimits() + " < " + camera.getFrameHeight()/5);
 		//pcPrint(camera.getTotalBlueArea() + " > " + camera.getFrameHeight() * camera.getFrameWidth() / 8);
-		//if(camera.getTotalSandArea() < camera.getFrameHeight() * camera.getFrameWidth() / 8)
+		if(camera.getTotalCanArea() > camera.getFrameHeight() * camera.getFrameWidth() / 10)
+		{
+			pcPrint("Obstacle Can limits");
+			state = RUN_FROM_OBSTACLE_1;
+		}
+		if(camera.getTotalSandArea() > camera.getFrameHeight() * camera.getFrameWidth() / 8)
+		{
+			pcPrint("Obstacle sand limits");
+			state = RUN_FROM_OBSTACLE_1;
+		}	
 		if(camera.getBlueLimits() < camera.getFrameHeight()/5 && camera.getTotalBlueArea() > camera.getFrameHeight() * camera.getFrameWidth() / 8)
 		{
 			pcPrint("Obstacle blue limits");
@@ -744,7 +784,14 @@ public class RobotBrain
 			time = System.currentTimeMillis() + 500;
 		}
 		
-		setMotorsMovement(-DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+		if(System.currentTimeMillis()%600 < 200)
+		{
+			setMotorsMovement(-DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+		}
+		else
+		{
+			setMotorsMovement(0, 0);
+		}
 		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
@@ -769,10 +816,17 @@ public class RobotBrain
 		
 		if(lastState != RUN_FROM_OBSTACLE_LEFT_BACK)
 		{
-			time = System.currentTimeMillis() + 200 + System.currentTimeMillis()%200;
+			time = System.currentTimeMillis() + 400 + System.currentTimeMillis()%400;
 		}
 		
-		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		if(System.currentTimeMillis()%600 < 200)
+		{
+			setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		}
+		else
+		{
+			setMotorsMovement(0, 0);
+		}
 		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
@@ -791,7 +845,7 @@ public class RobotBrain
 	{
 		if(lastState != RUN_FROM_OBSTACLE_LEFT_TURN)
 		{
-			time = System.currentTimeMillis() + 200 + System.currentTimeMillis()%200;
+			time = System.currentTimeMillis() + 400 + System.currentTimeMillis()%400;
 		}
 		
 		setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
@@ -819,10 +873,18 @@ public class RobotBrain
 		
 		if(lastState != RUN_FROM_OBSTACLE_RIGHT_BACK)
 		{
-			time = System.currentTimeMillis() + 200 + System.currentTimeMillis()%200;
+			time = System.currentTimeMillis() + 400 + System.currentTimeMillis()%400;
 		}
 		
-		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		if(System.currentTimeMillis()%600 < 200)
+		{
+			setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		}
+		else
+		{
+			setMotorsMovement(0, 0);
+		}
+		
 		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
@@ -841,7 +903,7 @@ public class RobotBrain
 	{
 		if(lastState != RUN_FROM_OBSTACLE_RIGHT_TURN)
 		{
-			time = System.currentTimeMillis() + 200 + System.currentTimeMillis()%200;
+			time = System.currentTimeMillis() + 400 + System.currentTimeMillis()%400;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
@@ -909,7 +971,7 @@ public class RobotBrain
 	{			
 		if(lastState != SEARCH_TRASH_LEFT_2)
 		{
-			time = System.currentTimeMillis() + TURNING_TIME + 3500;
+			time = System.currentTimeMillis() + TURNING_TIME + 2500;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
@@ -957,7 +1019,7 @@ public class RobotBrain
 	{			
 		if(lastState != SEARCH_TRASH_RIGHT_2)
 		{
-			time = System.currentTimeMillis() + TURNING_TIME + 3500 + System.currentTimeMillis()%1000;
+			time = System.currentTimeMillis() + TURNING_TIME + 2500 + System.currentTimeMillis()%1000;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
