@@ -16,7 +16,7 @@
 #define VIB_PIN 36 //VIBRADOR
 #define VIB_PWM 12
 
-#define SERVO_PIN 2
+#define SERVO_PIN 23
 #define START_BUTTON 24
 
 // TIMER4 is being used for newping, so cant drive PWM at these pins
