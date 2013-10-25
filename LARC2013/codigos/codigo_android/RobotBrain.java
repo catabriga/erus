@@ -3,7 +3,6 @@ package erus.android.erusbot;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import org.opencv.core.Point;
 
@@ -50,16 +49,19 @@ public class RobotBrain
 		
 	private static final int RUN_FROM_OBSTACLE_0 = 6000;
 	private static final int RUN_FROM_OBSTACLE_1 = 6001;
-	private static final int RUN_FROM_OBSTACLE_2 = 6002;
-	private static final int RUN_FROM_OBSTACLE_3 = 6003;
-	private static final int RUN_FROM_OBSTACLE_4 = 6004;
+	private static final int RUN_FROM_OBSTACLE_LEFT_BACK = 6002;
+	private static final int RUN_FROM_OBSTACLE_LEFT_TURN = 6003;
+	private static final int RUN_FROM_OBSTACLE_RIGHT_BACK = 6004;
+	private static final int RUN_FROM_OBSTACLE_RIGHT_TURN = 6005;
+	private static final int RUN_FROM_OBSTACLE_4 = 6006;
 	
 	private static final int OPEN_DEPOSIT = 8001;
 	private static final int BACKUP_FROM_TRASH = 8002;
 	private static final int CLOSE_DEPOSIT = 8003;
 	
-	private static final int TURNING_TIME = 1500;
-	private static final int SEARCHING_TIME = 1500;
+	private static final int TURNING_TIME = 500;
+	private static final int SEARCHING_TIME = 500;
+	private static final int NUMBER_OF_TURNINGS = 4;
 	
 	private int state;
 	private int lastState;
@@ -73,14 +75,13 @@ public class RobotBrain
 	private int motorDoor;
 	private int vibratorMotor;
 	private int buzzer;
+	private int counter;
 	
 	private Connection arduinoConnection;
 	private Connection pcConnection;
 	
 	private ErusView erusView;
 	
-	private static Random random = new Random();
-		
 	public RobotBrain(Connection arduinoConnection, Connection pcConnection, ErusView erusView)
 	{
 		state = WAIT_START;
@@ -148,6 +149,7 @@ public class RobotBrain
 		
 	private void setMotorsMovement(int leftMotor, int rightMotor) throws IOException
 	{	
+		
 		leftMotor = -leftMotor;
 		
 		leftMotor = checkPowerLimits(leftMotor);
@@ -408,7 +410,7 @@ public class RobotBrain
 	
 	private void checkTrashTime()
 	{
-		if(System.currentTimeMillis() - lastTrashTime > 1 * 60 * 1000)
+		if(System.currentTimeMillis() - lastTrashTime > 15 * 60 * 1000)
 		{
 			state = SEARCH_TRASH;
 		}
@@ -473,9 +475,10 @@ public class RobotBrain
 	{
 		Can can = getNearestCan(cameraProcessor);
 		
-		if(lastState != LEFT_1)
+		if(lastState != LEFT_2
+				)
 		{
-			time = System.currentTimeMillis() + TURNING_TIME;
+			time = System.currentTimeMillis() + TURNING_TIME + 3500;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
@@ -483,7 +486,7 @@ public class RobotBrain
 		
 		if(System.currentTimeMillis() > time)
 		{
-			state = LEFT_3;			
+			state = LEFT_1; // parar de ir para tras			
 		}
 		
 		if(can != null)
@@ -553,7 +556,7 @@ public class RobotBrain
 		
 		if(lastState != FORWARD)
 		{
-			time = System.currentTimeMillis() + 2000;
+			time = System.currentTimeMillis() + 3000 + (int)(10000 * Math.random())%4000;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
@@ -606,7 +609,7 @@ public class RobotBrain
 		
 		if(lastState != RIGHT_2)
 		{
-			time = System.currentTimeMillis() + TURNING_TIME;
+			time = System.currentTimeMillis() + TURNING_TIME + 3500;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
@@ -614,7 +617,7 @@ public class RobotBrain
 			
 		if(System.currentTimeMillis() > time)
 		{			
-			state = RIGHT_3;
+			state = RIGHT_1; // parou de ir para tras
 		}
 		
 		if(can != null)
@@ -690,7 +693,7 @@ public class RobotBrain
 		}
 		
 		
-		if(camera.getTrashSize() > 500)
+		if(camera.getTrashSize() > 200)
 		{
 			pcPrint("Trash Size");
 			state = RUN_FROM_OBSTACLE_1;
@@ -715,6 +718,7 @@ public class RobotBrain
 		}
 		
 		setMotorsMovement(0, 0);
+		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() < time)
 		{
@@ -733,52 +737,123 @@ public class RobotBrain
 	{
 		if(lastState != RUN_FROM_OBSTACLE_1)
 		{
-			time = System.currentTimeMillis() + 1000;
+			time = System.currentTimeMillis() + 500;
 		}
 		
 		setMotorsMovement(-DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
 		{
-			if(random.nextBoolean())
+			if(Math.random() < 0.2)
 			{
-				state = RUN_FROM_OBSTACLE_2;
+				state = RUN_FROM_OBSTACLE_LEFT_BACK;
 			}
 			else
 			{
-				state = RUN_FROM_OBSTACLE_3;
+				state = RUN_FROM_OBSTACLE_RIGHT_BACK;
 			}
 		}
 	}
 	
-	private void runFromObstacle2(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	private void runFromObstacleLeftBack(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
-		if(lastState != RUN_FROM_OBSTACLE_2)
+		if(lastState != RUN_FROM_OBSTACLE_LEFT_BACK && lastState != RUN_FROM_OBSTACLE_LEFT_TURN)
 		{
-			time = System.currentTimeMillis() + 500 + System.currentTimeMillis()%1000;
+			counter = 0;
+		}
+		
+		if(lastState != RUN_FROM_OBSTACLE_LEFT_BACK)
+		{
+			time = System.currentTimeMillis() + 200 + System.currentTimeMillis()%200;
+		}
+		
+		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
+		
+		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
+		{
+			state = RUN_FROM_OBSTACLE_LEFT_TURN;
+			if(counter > NUMBER_OF_TURNINGS || ult.getUs5() < 30 || ult.getUs6() < 30)
+			{
+				state = RUN_FROM_OBSTACLE_4;
+			}
+		}
+		
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void runFromObstacleLeftTurn(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		if(lastState != RUN_FROM_OBSTACLE_LEFT_TURN)
+		{
+			time = System.currentTimeMillis() + 200 + System.currentTimeMillis()%200;
 		}
 		
 		setMotorsMovement(-DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
 		{
-			state = RUN_FROM_OBSTACLE_4;
+			state = RUN_FROM_OBSTACLE_LEFT_BACK;
+			counter++;
+			if(ult.getUs5() < 30 || ult.getUs6() < 30)
+			{
+				state = RUN_FROM_OBSTACLE_4;
+			}
 		}
+		
+		checkObstacle(cameraProcessor, ult);
 	}
 	
-	private void runFromObstacle3(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	private void runFromObstacleRightBack(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{
-		if(lastState != RUN_FROM_OBSTACLE_3)
+		if(lastState != RUN_FROM_OBSTACLE_RIGHT_BACK && lastState != RUN_FROM_OBSTACLE_RIGHT_TURN)
 		{
-			time = System.currentTimeMillis() + 500 + System.currentTimeMillis()%1000;
+			counter = 0;
+		}
+		
+		if(lastState != RUN_FROM_OBSTACLE_RIGHT_BACK)
+		{
+			time = System.currentTimeMillis() + 200 + System.currentTimeMillis()%200;
+		}
+		
+		setMotorsMovement(DEFAULT_VELOCITY, DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
+		
+		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
+		{
+			state = RUN_FROM_OBSTACLE_RIGHT_TURN;
+			if(counter > NUMBER_OF_TURNINGS || ult.getUs5() < 30 || ult.getUs6() < 30)
+			{
+				state = RUN_FROM_OBSTACLE_4;
+			}
+		}
+		
+		checkObstacle(cameraProcessor, ult);
+	}
+	
+	private void runFromObstacleRightTurn(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{
+		if(lastState != RUN_FROM_OBSTACLE_RIGHT_TURN)
+		{
+			time = System.currentTimeMillis() + 200 + System.currentTimeMillis()%200;
 		}
 		
 		setMotorsMovement(DEFAULT_VELOCITY, -DEFAULT_VELOCITY);
+		setVassouraMovement(-100);
 		
 		if(System.currentTimeMillis() > time || ult.getUs5() < 30 || ult.getUs6() < 30)
 		{
-			state = RUN_FROM_OBSTACLE_4;
+			state = RUN_FROM_OBSTACLE_RIGHT_BACK;
+			counter++;
+			if(ult.getUs5() < 30 || ult.getUs6() < 30)
+			{
+				state = RUN_FROM_OBSTACLE_4;
+			}
 		}
+		
+		checkObstacle(cameraProcessor, ult);
 	}
 	
 	private void runFromObstacle4(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
@@ -1052,11 +1127,17 @@ public class RobotBrain
 				case RUN_FROM_OBSTACLE_1:
 					runFromObstacle1(act, acc, comp, ult, cameraProcessor);
 				break;
-				case RUN_FROM_OBSTACLE_2:
-					runFromObstacle2(act, acc, comp, ult, cameraProcessor);
+				case RUN_FROM_OBSTACLE_LEFT_BACK:
+					runFromObstacleLeftBack(act, acc, comp, ult, cameraProcessor);
 				break;
-				case RUN_FROM_OBSTACLE_3:
-					runFromObstacle3(act, acc, comp, ult, cameraProcessor);
+				case RUN_FROM_OBSTACLE_LEFT_TURN:
+					runFromObstacleLeftTurn(act, acc, comp, ult, cameraProcessor);
+				break;
+				case RUN_FROM_OBSTACLE_RIGHT_BACK:
+					runFromObstacleRightBack(act, acc, comp, ult, cameraProcessor);
+				break;
+				case RUN_FROM_OBSTACLE_RIGHT_TURN:
+					runFromObstacleRightTurn(act, acc, comp, ult, cameraProcessor);
 				break;
 				case RUN_FROM_OBSTACLE_4:
 					runFromObstacle4(act, acc, comp, ult, cameraProcessor);
@@ -1125,13 +1206,13 @@ public class RobotBrain
 			}
 		
 			
-			state = GO_TO_CAN_TURN;
+			state = FORWARD;
 			
 			lastTrashTime = System.currentTimeMillis();
 		}
 		else if (state == STOP)
 		{
-			state = GO_TO_CAN_TURN;
+			state = FORWARD;
 			
 		}
 		else
