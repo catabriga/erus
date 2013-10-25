@@ -119,7 +119,7 @@ void setup()
 	Serial.begin(57600); //inicia a porta serial 
   
 	setupMotors();
-	//setupServoMotor();
+	setupServoMotor();
 	setupVibrationMotor();
 	setupUltrasound();
 	setupButton();
@@ -170,7 +170,7 @@ void processMessages()
 			
 			case SERVO:
 			{
-				//setServoMotor(msg[1]);
+				setServoMotor(msg[1]);
 			}break;	
 			
 			case VIBRATOR:
