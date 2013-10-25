@@ -42,7 +42,8 @@ public class RobotBrain
 	
 	private static final int GO_TO_TRASH_TURN = 3010;
 	private static final int GO_TO_TRASH_FORWARD = 3011;
-	private static final int GO_TO_TRASH_DEBOUNCE_ULTRASOUND = 3012;
+	//private static final int GO_TO_TRASH_DEBOUNCE_ULTRASOUND = 3012;
+	private static final int GO_TO_TRASH_DEBOUNCE_BUTTON = 3012;
 	private static final int SEARCH_TRASH = 3013;
 	private static final int SEARCH_TRASH_LEFT_1 = 3014;
 	private static final int SEARCH_TRASH_LEFT_2 = 3015;
@@ -1013,10 +1014,14 @@ public class RobotBrain
 				state = GO_TO_TRASH_FORWARD;
 			}
 			
-			if(ult.getInfra() < 300)
+			/*if(ult.getInfra() < 300)
 			{
 				state = GO_TO_TRASH_DEBOUNCE_ULTRASOUND;
 //				setMotorsMovement(0, 0);
+			}*/
+			if(this.obstacleButton == 1)
+			{
+				state = GO_TO_TRASH_DEBOUNCE_BUTTON;
 			}
 		}
 		else
@@ -1047,10 +1052,14 @@ public class RobotBrain
 				state = GO_TO_TRASH_FORWARD;
 			}
 			
-			if(ult.getInfra() < 300)
+			/*if(ult.getInfra() < 300)
 			{
 				state = GO_TO_TRASH_DEBOUNCE_ULTRASOUND;
 //				setMotorsMovement(0, 0);
+			}*/
+			if(this.obstacleButton == 1)
+			{
+				state = GO_TO_TRASH_DEBOUNCE_BUTTON;
 			}
 		}
 		else
@@ -1062,7 +1071,7 @@ public class RobotBrain
 		checkObstacle(cameraProcessor, ult);
 	}
 	
-	private void stateGoToTrashDebounceUltrasound(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	/*private void stateGoToTrashDebounceUltrasound(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{		
 		if(lastState != GO_TO_TRASH_DEBOUNCE_ULTRASOUND)
 		{
@@ -1082,7 +1091,28 @@ public class RobotBrain
 		{
 			state = OPEN_DEPOSIT;
 		}	
-	}	
+	}*/
+	private void stateGoToTrashDebounceButton(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
+	{		
+		if(lastState != GO_TO_TRASH_DEBOUNCE_BUTTON)
+		{
+			time = System.currentTimeMillis() + 1000;
+		}
+		
+		setMotorsMovement( 0, 0);
+		
+		if(System.currentTimeMillis() < time)
+		{			
+			if(this.obstacleButton == 0)
+			{
+				state = GO_TO_TRASH_TURN;
+			}	
+		}
+		else
+		{
+			state = OPEN_DEPOSIT;
+		}	
+	}
 	
 	private void stateOpenDeposit(CodigoAndroidActivity act, Accelerometer acc, Compass comp, UltraSound ult, CameraProcessor cameraProcessor) throws IOException
 	{		
@@ -1228,8 +1258,8 @@ public class RobotBrain
 				case GO_TO_TRASH_FORWARD:
 					stateGoToTrashForward(act, acc, comp, ult, cameraProcessor);
 				break;
-				case GO_TO_TRASH_DEBOUNCE_ULTRASOUND:
-					stateGoToTrashDebounceUltrasound(act, acc, comp, ult, cameraProcessor);
+				case GO_TO_TRASH_DEBOUNCE_BUTTON:
+					stateGoToTrashDebounceButton(act, acc, comp, ult, cameraProcessor);
 				break;
 				case OPEN_DEPOSIT:
 					stateOpenDeposit(act, acc, comp, ult, cameraProcessor);
